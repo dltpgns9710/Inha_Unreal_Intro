@@ -4,3 +4,5 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, Inha_Intro, "Inha_Intro" );
+
+DEFINE_LOG_CATEGORY(INHA);
