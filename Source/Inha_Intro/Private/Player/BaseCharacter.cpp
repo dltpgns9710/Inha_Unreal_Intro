@@ -2,7 +2,6 @@
 
 #include "Public/Player/BaseCharacter.h"
 
-#include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -23,11 +22,40 @@ ABaseCharacter::ABaseCharacter()
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->SetRelativeLocation(FVector(0, 70, 90));
-	CameraBoom->TargetArmLength = 400.0f;
+	//CameraBoom->SetRelativeLocation(FVector(0, 70, 90));
+	CameraBoom->SocketOffset = FVector(0, 70, 90);
+	CameraBoom->TargetArmLength = 400.f;
+	CameraBoom->ProbeSize = 20.f;
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>("FollowCamera");
 	FollowCamera->SetupAttachment(CameraBoom);
+	FollowCamera->SetFieldOfView(BaseFov);
+	
+	RifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Rilfe");
+	RifleMesh->SetupAttachment(GetMesh());
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> RifleMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Assault_Rifle_A.Assault_Rifle_A'"));
+	if (RifleMeshPath.Succeeded())
+	{
+		RifleMesh->SetSkeletalMesh(RifleMeshPath.Object);
+		RifleMesh->SetRelativeLocation(FVector(-14, 11, 138));
+		if (EquipWeapon != EEquipWeapon::Rifle)
+		{
+			RifleMesh->SetVisibility(false);
+		}
+	}
+	
+	SniperMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Sniper");
+	SniperMesh->SetupAttachment(GetMesh());
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> SniperMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Sniper_Rifle_A.Sniper_Rifle_A'"));
+	if (SniperMeshPath.Succeeded())
+	{
+		SniperMesh->SetSkeletalMesh(SniperMeshPath.Object);
+		SniperMesh->SetRelativeLocation(FVector(-22, 31, 128));
+		if (EquipWeapon != EEquipWeapon::Sniper)
+		{
+			SniperMesh->SetVisibility(false);
+		}
+	}
 }
 
 // Called when the game starts or when spawned
@@ -37,12 +65,20 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
+void ABaseCharacter::SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible)
+{
+	if (Target)
+	{
+		Target->SetVisibility(Visible);
+	}
+}
+
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	float dist = FVector::Dist(GetActorLocation(), FollowCamera->GetComponentLocation());
-	if (dist <= 200.0f)
+	if (dist <= HiddenMeshDist)
 	{
 		GetMesh()->SetVisibility(false);
 	}
@@ -59,3 +95,47 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void ABaseCharacter::ToggleWeapon()
+{
+	switch(EquipWeapon)
+	{
+	case EEquipWeapon::Rifle:
+		SetSkeletalMeshVisibility(RifleMesh, false);
+		SetSkeletalMeshVisibility(SniperMesh, true);
+		EquipWeapon = EEquipWeapon::Sniper;
+		break;
+	case EEquipWeapon::Sniper:
+	case EEquipWeapon::None:
+	default:
+		SetSkeletalMeshVisibility(RifleMesh, true);
+		SetSkeletalMeshVisibility(SniperMesh, false);
+		EquipWeapon = EEquipWeapon::Rifle;
+		break;
+	}
+}
+
+bool ABaseCharacter::EnterSniper()
+{
+	if (EquipWeapon != EEquipWeapon::Sniper) return false;
+	FollowCamera->SetFieldOfView(InSniperFov);
+	
+	return true;
+}
+
+bool ABaseCharacter::ExitSniper()
+{
+	if (EquipWeapon != EEquipWeapon::Sniper) return false;
+	FollowCamera->SetFieldOfView(BaseFov);
+	
+	return true;
+}
+
+FTransform ABaseCharacter::GetFirePosition() const
+{
+	return RifleMesh->GetSocketTransform(TEXT("MuzzleFlash"));
+}
+
+EEquipWeapon ABaseCharacter::GetEquipWeapon() const
+{
+	return EquipWeapon;
+}

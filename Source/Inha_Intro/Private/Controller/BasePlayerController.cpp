@@ -5,7 +5,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
+#include "Player/BaseCharacter.h"
+#include "Projectile/BaseBullet.h"
 
 void ABasePlayerController::BeginPlay()
 {
@@ -29,7 +32,11 @@ void ABasePlayerController::SetupInputComponent()
 	{
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Look);
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Move);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Jump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABasePlayerController::Input_Jump);
+		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &ABasePlayerController::Input_Fire);
+		EnhancedInputComponent->BindAction(IA_WeaponToggle, ETriggerEvent::Started, this, &ABasePlayerController::Input_WeaponToggle);
+		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterSniper);
+		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitSniper);
 	}
 }
 
@@ -88,4 +95,63 @@ void ABasePlayerController::Input_Jump(const FInputActionValue& InputActionValue
 	{
 		OwnerCharacter->Jump();
 	}
+}
+
+void ABasePlayerController::Input_Fire(const FInputActionValue& InputActionValue)
+{
+	if (GetCastOwnerCharacter())
+	{
+		FTransform FirePosition = GetCastOwnerCharacter()->GetFirePosition();
+		GetWorld()->SpawnActor<ABaseBullet>(BulletFactory, FirePosition);
+	}
+}
+
+void ABasePlayerController::Input_WeaponToggle(const FInputActionValue& InputActionValue)
+{
+	if (GetCastOwnerCharacter())
+	{
+		if (GetCastOwnerCharacter()->GetEquipWeapon() == EEquipWeapon::Sniper && CrossHairWidget)
+		{
+			GetCastOwnerCharacter()->ExitSniper();
+			CrossHairWidget->RemoveFromParent();
+			CrossHairWidget = nullptr;
+		}
+		GetCastOwnerCharacter()->ToggleWeapon();
+	}
+}
+
+void ABasePlayerController::Input_EnterSniper(const FInputActionValue& InputActionValue)
+{
+	if (GetCastOwnerCharacter())
+	{
+		if (GetCastOwnerCharacter()->EnterSniper())
+		{
+			CrossHairWidget = CreateWidget<UUserWidget>(this, CrossHairWidgetClass);
+			if (CrossHairWidget)
+			{
+				CrossHairWidget->AddToViewport();
+			}
+		}
+	}
+}
+
+void ABasePlayerController::Input_ExitSniper(const FInputActionValue& InputActionValue)
+{
+	if (GetCastOwnerCharacter())
+	{
+		if (GetCastOwnerCharacter()->ExitSniper() && CrossHairWidget)
+		{
+			CrossHairWidget->RemoveFromParent();
+			CrossHairWidget = nullptr;
+		}
+	}
+}
+
+ABaseCharacter* ABasePlayerController::GetCastOwnerCharacter()
+{
+	if (!CastOwnerCharacter)
+	{
+		CastOwnerCharacter = Cast<ABaseCharacter>(OwnerCharacter);
+	}
+	return CastOwnerCharacter;
 }
