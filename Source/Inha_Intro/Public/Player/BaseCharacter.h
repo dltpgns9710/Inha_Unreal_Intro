@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UNiagaraSystem;
+class ABaseBullet;
 struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
@@ -42,18 +44,27 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> SniperMesh = nullptr;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Factory")
+	TSubclassOf<ABaseBullet> BulletFactory;
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	TObjectPtr<UNiagaraSystem> EffectFactory;
+	
 	UPROPERTY(EditAnywhere, Category = "Values")
 	float HiddenMeshDist = 200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Values")
 	float InSniperFov = 45.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Values")
 	float BaseFov = 90.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Values")
+	float SniperLength = 5000.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Values", meta = (AllowPrivateAccess = true))
 	EEquipWeapon EquipWeapon = EEquipWeapon::Rifle;
 	
 	void SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible);
 	
+	void FireRifle();
+	void FireSniper();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -61,9 +72,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void Fire();
 	void ToggleWeapon();
 	bool EnterSniper();
 	bool ExitSniper();
-	FTransform GetFirePosition() const;
 	EEquipWeapon GetEquipWeapon() const;
 };

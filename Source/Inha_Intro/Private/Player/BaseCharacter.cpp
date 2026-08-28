@@ -2,8 +2,10 @@
 
 #include "Public/Player/BaseCharacter.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Projectile/BaseBullet.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -22,6 +24,7 @@ ABaseCharacter::ABaseCharacter()
 	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->bUsePawnControlRotation = true;
 	//CameraBoom->SetRelativeLocation(FVector(0, 70, 90));
 	CameraBoom->SocketOffset = FVector(0, 70, 90);
 	CameraBoom->TargetArmLength = 400.f;
@@ -56,6 +59,8 @@ ABaseCharacter::ABaseCharacter()
 			SniperMesh->SetVisibility(false);
 		}
 	}
+	
+	
 }
 
 // Called when the game starts or when spawned
@@ -95,6 +100,58 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void ABaseCharacter::Fire()
+{
+	switch(EquipWeapon)
+	{
+	case EEquipWeapon::Rifle:
+		FireRifle();
+		break;
+	case EEquipWeapon::Sniper:
+		FireSniper();
+		break;
+	case EEquipWeapon::None:
+	default:
+		break;
+	}
+}
+
+void ABaseCharacter::FireRifle()
+{
+	FTransform FirePosition = RifleMesh->GetSocketTransform(TEXT("MuzzleFlash"));
+	GetWorld()->SpawnActor<ABaseBullet>(BulletFactory, FirePosition);
+}
+
+void ABaseCharacter::FireSniper()
+{
+	//FVector StartPosition = SniperMesh->GetSocketLocation(TEXT("MuzzleFlash"));
+	FVector StartPosition = FollowCamera->GetComponentLocation();
+	FVector EndPosition = StartPosition + FollowCamera->GetForwardVector() * SniperLength;
+	//FVector EndPosition = SniperMesh->GetSocketLocation(TEXT("MuzzleFlash")) + FollowCamera->GetForwardVector() * SniperLength;
+	FHitResult HitInfo;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitInfo, StartPosition, EndPosition, ECC_GameTraceChannel1, CollisionParams);
+	if (bHit)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			EffectFactory,
+			HitInfo.ImpactPoint,
+			HitInfo.ImpactNormal.Rotation()
+		);
+		
+		UPrimitiveComponent* HitComp = HitInfo.GetComponent();
+		if (HitComp && HitComp->IsSimulatingPhysics())
+		{
+			FVector dir = (EndPosition - StartPosition).GetSafeNormal();
+			FVector force = dir * HitComp->GetMass() * 500000;
+			HitComp->AddForceAtLocation(force, HitInfo.ImpactPoint);
+		}
+	}
+}
+
 void ABaseCharacter::ToggleWeapon()
 {
 	switch(EquipWeapon)
@@ -128,11 +185,6 @@ bool ABaseCharacter::ExitSniper()
 	FollowCamera->SetFieldOfView(BaseFov);
 	
 	return true;
-}
-
-FTransform ABaseCharacter::GetFirePosition() const
-{
-	return RifleMesh->GetSocketTransform(TEXT("MuzzleFlash"));
 }
 
 EEquipWeapon ABaseCharacter::GetEquipWeapon() const

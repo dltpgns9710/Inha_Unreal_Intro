@@ -44,9 +44,10 @@ void ABasePlayerController::Input_Look(const FInputActionValue& InputActionValue
 {
 	if (OwnerCharacter == nullptr)
 		return;
-
+	
 	const FVector2D Value = InputActionValue.Get<FVector2D>();
 
+	//UE_LOG(LogTemp,Warning,TEXT("%f, %f"), Value.X, Value.Y);
 	if (Value.X != 0.0f)
 	{
 		OwnerCharacter->AddControllerYawInput(Value.X);
@@ -54,7 +55,7 @@ void ABasePlayerController::Input_Look(const FInputActionValue& InputActionValue
 
 	if (Value.Y != 0.0f)
 	{
-		OwnerCharacter->AddControllerPitchInput(Value.Y);
+		OwnerCharacter->AddControllerPitchInput(-Value.Y);
 	}
 }
 
@@ -101,8 +102,7 @@ void ABasePlayerController::Input_Fire(const FInputActionValue& InputActionValue
 {
 	if (GetCastOwnerCharacter())
 	{
-		FTransform FirePosition = GetCastOwnerCharacter()->GetFirePosition();
-		GetWorld()->SpawnActor<ABaseBullet>(BulletFactory, FirePosition);
+		GetCastOwnerCharacter()->Fire();
 	}
 }
 

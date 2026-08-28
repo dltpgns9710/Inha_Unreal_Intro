@@ -7,7 +7,6 @@
 #include "BasePlayerController.generated.h"
 
 class ABaseCharacter;
-class ABaseBullet;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
@@ -45,9 +44,6 @@ private:
 	TObjectPtr<ABaseCharacter> CastOwnerCharacter = nullptr;
 	UPROPERTY()
 	TObjectPtr<UUserWidget> CrossHairWidget = nullptr;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Factory")
-	TSubclassOf<ABaseBullet> BulletFactory;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> CrossHairWidgetClass;
