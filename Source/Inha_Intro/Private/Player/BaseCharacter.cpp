@@ -4,6 +4,7 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Component/EnemyFSM.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Projectile/BaseBullet.h"
 
@@ -148,6 +149,13 @@ void ABaseCharacter::FireSniper()
 			FVector dir = (EndPosition - StartPosition).GetSafeNormal();
 			FVector force = dir * HitComp->GetMass() * 500000;
 			HitComp->AddForceAtLocation(force, HitInfo.ImpactPoint);
+		}
+		
+		UObject* Target = HitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM"));
+		if (Target)
+		{
+			UEnemyFSM* EnemyFsm = Cast<UEnemyFSM>(Target);
+			EnemyFsm->OnDamageProcess();
 		}
 	}
 }
