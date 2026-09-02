@@ -36,6 +36,8 @@ protected:
 	TObjectPtr<UInputAction> IA_WeaponToggle;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> IA_Sniper;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> IA_Run;
 	
 private:
 	UPROPERTY()
@@ -55,6 +57,7 @@ private:
 	void Input_WeaponToggle(const FInputActionValue& InputActionValue);
 	void Input_EnterSniper(const FInputActionValue& InputActionValue);
 	void Input_ExitSniper(const FInputActionValue& InputActionValue);
-	
+	void Input_EnterRun(const FInputActionValue& InputActionValue);
+	void Input_ExitRun(const FInputActionValue& InputActionValue);
 	ABaseCharacter* GetCastOwnerCharacter();
 };

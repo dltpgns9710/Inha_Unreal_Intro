@@ -38,16 +38,25 @@ private:
 	TObjectPtr<USpringArmComponent> CameraBoom = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> FollowCamera = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "Camera")
+	TSubclassOf<UCameraShakeBase> CameraShake;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> RifleMesh = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> SniperMesh = nullptr;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Montage")
+	TObjectPtr<UAnimMontage> FireRifleMontage;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Factory")
 	TSubclassOf<ABaseBullet> BulletFactory;
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 	TObjectPtr<UNiagaraSystem> EffectFactory;
+	
+	UPROPERTY()
+	TObjectPtr<APlayerController> CachedPlayerController = nullptr;
+	APlayerController* GetPlayerController();
 	
 	UPROPERTY(EditAnywhere, Category = "Values")
 	float HiddenMeshDist = 200.f;
@@ -57,6 +66,10 @@ private:
 	float BaseFov = 90.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Values")
 	float SniperLength = 5000.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Values")
+	float WalkSpeed = 300.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Values")
+	float RunSpeed = 600.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Values", meta = (AllowPrivateAccess = true))
 	EEquipWeapon EquipWeapon = EEquipWeapon::Rifle;
@@ -76,5 +89,7 @@ public:
 	void ToggleWeapon();
 	bool EnterSniper();
 	bool ExitSniper();
+	void SetSpeedToWalk();
+	void SetSpeedToRun();
 	EEquipWeapon GetEquipWeapon() const;
 };

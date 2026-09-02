@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Player/BaseCharacter.h"
 #include "Projectile/BaseBullet.h"
 
@@ -37,6 +38,8 @@ void ABasePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_WeaponToggle, ETriggerEvent::Started, this, &ABasePlayerController::Input_WeaponToggle);
 		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterSniper);
 		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitSniper);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterRun);
+		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitRun);
 	}
 }
 
@@ -145,6 +148,16 @@ void ABasePlayerController::Input_ExitSniper(const FInputActionValue& InputActio
 			CrossHairWidget = nullptr;
 		}
 	}
+}
+
+void ABasePlayerController::Input_EnterRun(const FInputActionValue& InputActionValue)
+{
+	CastOwnerCharacter->SetSpeedToRun();
+}
+
+void ABasePlayerController::Input_ExitRun(const FInputActionValue& InputActionValue)
+{
+	CastOwnerCharacter->SetSpeedToWalk();
 }
 
 ABaseCharacter* ABasePlayerController::GetCastOwnerCharacter()

@@ -47,7 +47,7 @@ public:
 	void DieState();
 		
 	void OnDamageProcess();
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	float IdleDelayTime = 2.f;
