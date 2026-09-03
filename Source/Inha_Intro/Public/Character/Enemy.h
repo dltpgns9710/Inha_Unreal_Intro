@@ -31,5 +31,4 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSMComponent", meta=(AllowPrivateAccess="true"))
 	TObjectPtr<UEnemyFSM> Fsm;
-	
 };

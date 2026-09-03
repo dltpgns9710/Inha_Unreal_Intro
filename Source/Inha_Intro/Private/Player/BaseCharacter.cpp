@@ -134,6 +134,7 @@ void ABaseCharacter::FireRifle()
 	if (FireRifleMontage)
 	{
 		PlayAnimMontage(FireRifleMontage);
+		OnFire.ExecuteIfBound();
 	}
 	// 카메라 셰이크 재생
 	APlayerController* PlayerController = GetPlayerController();

@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/BaseCharacter.h"
 
 void UBaseCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -15,6 +16,10 @@ void UBaseCharacterAnimInstance::NativeInitializeAnimation()
 	if (Character)
 	{
 		MovementComponent = Character->GetCharacterMovement();
+	}
+	if (ABaseCharacter* CastCharacter = Cast<ABaseCharacter>(OwningPawn))
+	{
+		CastCharacter->OnFire.BindUObject(this, &ThisClass::OnFire);
 	}
 }
 
@@ -34,3 +39,24 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Direction = CalculateDirection(Velocity, Character->GetActorRotation());
 	}
 }
+
+void UBaseCharacterAnimInstance::OnFire()
+{
+	bIsFire = true;
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(OnFireTimer))
+	{
+		GetWorld()->GetTimerManager().ClearTimer(OnFireTimer);
+	}
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		OnFireTimer,
+		FTimerDelegate::CreateLambda([this]()
+		{
+			bIsFire = false;
+		}),
+		FireRecoveryTime,
+		false
+	);
+}
+

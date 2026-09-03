@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+DECLARE_DELEGATE(FOnTrigger)
+
 class UNiagaraSystem;
 class ABaseBullet;
 struct FInputActionValue;
@@ -85,6 +87,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FOnTrigger OnFire;
+	
 	void Fire();
 	void ToggleWeapon();
 	bool EnterSniper();

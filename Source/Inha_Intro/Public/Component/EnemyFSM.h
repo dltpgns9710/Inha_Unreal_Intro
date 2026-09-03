@@ -7,6 +7,7 @@
 #include "EnemyFSM.generated.h"
 
 
+class UEnemyAnimation;
 class AEnemy;
 class ABaseCharacter;
 
@@ -61,6 +62,9 @@ protected:
 	TObjectPtr<AEnemy> Owner;
 	
 	UPROPERTY(EditAnywhere, Category="FSM")
+	float SightDegree = 90.f;
+	
+	UPROPERTY(EditAnywhere, Category="FSM")
 	float AttackRange = 150.f;
 	
 	UPROPERTY(EditAnywhere, Category="FSM")
@@ -77,4 +81,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="FSM")
 	float DestroyDepth = 200.f;
+	
+private:
+	UPROPERTY()
+	TObjectPtr<UEnemyAnimation> CachedAnim;
 };

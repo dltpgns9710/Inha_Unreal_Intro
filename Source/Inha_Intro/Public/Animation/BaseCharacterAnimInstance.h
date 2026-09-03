@@ -38,4 +38,15 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	bool bIsFalling = false;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	bool bIsFire = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
+	float FireRecoveryTime = 5.f;
+	
+private:
+	void OnFire();
+	
+	FTimerHandle OnFireTimer;
 };
