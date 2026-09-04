@@ -21,7 +21,7 @@ AEnemy::AEnemy()
 	
 	Fsm = CreateDefaultSubobject<UEnemyFSM>("FSM");
 	
-	ConstructorHelpers::FClassFinder<UAnimInstance> TempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Character/Enemy/Animation/BP_Enemy.BP_Enemy'"));
+	ConstructorHelpers::FClassFinder<UAnimInstance> TempAnim(TEXT("/Script/Engine.AnimBlueprint'/Game/Blueprints/Character/Enemy/Animation/ABP_Enemy.ABP_Enemy_C'"));
 	if (TempAnim.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(TempAnim.Class);
@@ -40,7 +40,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	GEngine->AddOnScreenDebugMessage(0,1,FColor::Blue, UEnum::GetValueAsString(Fsm->State));
+	//GEngine->AddOnScreenDebugMessage(0,1,FColor::Blue, UEnum::GetValueAsString(Fsm->State));
 }
 
 // Called to bind functionality to input

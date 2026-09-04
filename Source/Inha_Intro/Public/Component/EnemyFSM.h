@@ -7,6 +7,7 @@
 #include "EnemyFSM.generated.h"
 
 
+class AAIController;
 class UEnemyAnimation;
 class AEnemy;
 class ABaseCharacter;
@@ -82,7 +83,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category="FSM")
 	float DestroyDepth = 200.f;
 	
+	UPROPERTY(EditAnywhere, Category="FSM")
+	float RandomPositionRadius = 500.f;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<UEnemyAnimation> CachedAnim;
+	
+	UPROPERTY()
+	TObjectPtr<AAIController> OwnerAiController;
+	
+	FVector RandomPosition;
+	bool GetRandomPositionInNavMesh(FVector Center, float Radius, FVector& Dest);
 };

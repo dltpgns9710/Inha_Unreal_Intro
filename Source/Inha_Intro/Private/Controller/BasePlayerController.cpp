@@ -152,12 +152,12 @@ void ABasePlayerController::Input_ExitSniper(const FInputActionValue& InputActio
 
 void ABasePlayerController::Input_EnterRun(const FInputActionValue& InputActionValue)
 {
-	CastOwnerCharacter->SetSpeedToRun();
+	GetCastOwnerCharacter()->SetSpeedToRun();
 }
 
 void ABasePlayerController::Input_ExitRun(const FInputActionValue& InputActionValue)
 {
-	CastOwnerCharacter->SetSpeedToWalk();
+	GetCastOwnerCharacter()->SetSpeedToWalk();
 }
 
 ABaseCharacter* ABasePlayerController::GetCastOwnerCharacter()

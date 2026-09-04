@@ -3,12 +3,15 @@
 
 #include "Component/EnemyFSM.h"
 
+#include "AIController.h"
 #include "Inha_Intro.h"
+#include "NavigationSystem.h"
 #include "Animation/EnemyAnimation.h"
 #include "Character/Enemy.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/BaseCharacter.h"
+#include "Navigation/PathFollowingComponent.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -32,6 +35,7 @@ void UEnemyFSM::BeginPlay()
 	Owner = Cast<AEnemy>(GetOwner());
 	
 	CachedAnim = Cast<UEnemyAnimation>(Owner->GetMesh()->GetAnimInstance());
+	OwnerAiController = Cast<AAIController>(Owner->GetController());
 }
 
 
@@ -67,6 +71,7 @@ void UEnemyFSM::IdleState()
 		State = EEnemyState::Move;
 		CurrentTime = 0;
 		CachedAnim->SetAnimState(State);
+		GetRandomPositionInNavMesh(Owner->GetActorLocation(), RandomPositionRadius, RandomPosition);
 	}
 }
 
@@ -74,7 +79,33 @@ void UEnemyFSM::MoveState()
 {
 	FVector Destination = Target->GetActorLocation();
 	FVector Dir = Destination - Owner->GetActorLocation();
-	Owner->AddMovementInput(Dir.GetSafeNormal());
+	
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	
+	FPathFindingQuery Query;
+	FAIMoveRequest Req;
+	Req.SetAcceptanceRadius(3);
+	Req.SetGoalLocation(Destination);
+	// 길 찾기를 위한 쿼리 생성
+	OwnerAiController->BuildPathfindingQuery(Req, Query);
+
+	// 끊긴 길은 찾기 않도록 설정
+	Query.SetAllowPartialPaths(false);
+	
+	FPathFindingResult PathFindingQuery = NavSystem->FindPathSync(Query);
+	
+	if (PathFindingQuery.Result == ENavigationQueryResult::Success)
+	{
+		OwnerAiController->MoveToLocation(Destination);
+	}
+	else
+	{
+		EPathFollowingRequestResult::Type Result = OwnerAiController->MoveToLocation(RandomPosition);
+		if (Result == EPathFollowingRequestResult::AlreadyAtGoal)
+		{
+			GetRandomPositionInNavMesh(Owner->GetActorLocation(), RandomPositionRadius, RandomPosition);
+		}
+	}
 	
 	FVector DirectionToTarget = (Target->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal();
 	float DotResult = FVector::DotProduct(Owner->GetActorForwardVector(), DirectionToTarget);
@@ -82,6 +113,7 @@ void UEnemyFSM::MoveState()
 	
 	if (isInSight && Dir.Size() < AttackRange)
 	{
+		OwnerAiController->StopMovement();
 		State = EEnemyState::Attack;
 		CachedAnim->SetAnimState(State);
 		CachedAnim->SetCanAttackPlay(true);
@@ -95,11 +127,13 @@ void UEnemyFSM::AttackState()
 	float DotResult = FVector::DotProduct(Owner->GetActorForwardVector(), DirectionToTarget);
 	bool isInSight = DotResult >= FMath::Cos(FMath::DegreesToRadians(SightDegree/2));
 	float Distance = FVector::Distance(Target->GetActorLocation(), Owner->GetActorLocation());
+	
 	if (!CachedAnim->IsAttackPlaying() && (!isInSight || Distance > AttackRange))
 	{
 		CurrentTime = 0;
 		State = EEnemyState::Move;
 		CachedAnim->SetAnimState(State);
+		GetRandomPositionInNavMesh(Owner->GetActorLocation(), RandomPositionRadius, RandomPosition);
 	}
 	
 	CurrentTime += GetWorld()->GetDeltaSeconds();
@@ -109,14 +143,6 @@ void UEnemyFSM::AttackState()
 		CurrentTime = 0;
 		CachedAnim->SetCanAttackPlay(true);
 	}
-	
-	
-	/*if (!CachedAnim->IsAttackPlaying() && Distance > AttackRange)
-	{
-		CurrentTime = 0;
-		State = EEnemyState::Move;
-		CachedAnim->SetAnimState(State);
-	}*/
 }
 
 void UEnemyFSM::OnDamageProcess()
@@ -139,6 +165,16 @@ void UEnemyFSM::OnDamageProcess()
 		CachedAnim->OnDamaged(FName(TEXT("Dead")));
 	}
 	CachedAnim->SetAnimState(State);
+	OwnerAiController->StopMovement();
+}
+
+bool UEnemyFSM::GetRandomPositionInNavMesh(FVector Center, float Radius, FVector& Dest)
+{
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	FNavLocation NavLocation;
+	bool Result = NavSystem->GetRandomReachablePointInRadius(Center, Radius, NavLocation);
+	Dest = NavLocation.Location;
+	return Result;
 }
 
 void UEnemyFSM::DamageState()

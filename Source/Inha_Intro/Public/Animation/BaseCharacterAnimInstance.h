@@ -43,7 +43,7 @@ protected:
 	bool bIsFire = false;
 	
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
-	float FireRecoveryTime = 5.f;
+	float FireRecoveryTime = 1.5f;
 	
 private:
 	void OnFire();
