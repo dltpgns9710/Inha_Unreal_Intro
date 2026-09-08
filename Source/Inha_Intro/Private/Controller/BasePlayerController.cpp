@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
+#include "Component/PlayerMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/BaseCharacter.h"
@@ -45,60 +46,69 @@ void ABasePlayerController::SetupInputComponent()
 
 void ABasePlayerController::Input_Look(const FInputActionValue& InputActionValue)
 {
-	if (OwnerCharacter == nullptr)
+	if (OwnerCharacter == nullptr || 
+		GetPlayerMovementComponent() == nullptr)
 		return;
 	
-	const FVector2D Value = InputActionValue.Get<FVector2D>();
-
-	//UE_LOG(LogTemp,Warning,TEXT("%f, %f"), Value.X, Value.Y);
-	if (Value.X != 0.0f)
-	{
-		OwnerCharacter->AddControllerYawInput(Value.X);
-	}
-
-	if (Value.Y != 0.0f)
-	{
-		OwnerCharacter->AddControllerPitchInput(-Value.Y);
-	}
+	GetPlayerMovementComponent()->Look(InputActionValue);
+	
+	// const FVector2D Value = InputActionValue.Get<FVector2D>();
+	//
+	// //UE_LOG(LogTemp,Warning,TEXT("%f, %f"), Value.X, Value.Y);
+	// if (Value.X != 0.0f)
+	// {
+	// 	OwnerCharacter->AddControllerYawInput(Value.X);
+	// }
+	//
+	// if (Value.Y != 0.0f)
+	// {
+	// 	OwnerCharacter->AddControllerPitchInput(-Value.Y);
+	// }
 }
 
 void ABasePlayerController::Input_Move(const FInputActionValue& InputActionValue)
 {
-	if (OwnerCharacter == nullptr)
+	if (OwnerCharacter == nullptr || 
+		GetPlayerMovementComponent() == nullptr)
 		return;
 
-	AController* Controller = OwnerCharacter->GetController();
-
-	if (Controller)
-	{
-		const FVector2D Value = InputActionValue.Get<FVector2D>();
-		const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
-
-		if (Value.X != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-			OwnerCharacter->AddMovementInput(MovementDirection, Value.X);
-		}
-
-		if (Value.Y != 0.0f)
-		{
-			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-			OwnerCharacter->AddMovementInput(MovementDirection, Value.Y);
-		}
-	}
+	GetPlayerMovementComponent()->Move(InputActionValue);
+	
+	// AController* Controller = OwnerCharacter->GetController();
+	//
+	// if (Controller)
+	// {
+	// 	const FVector2D Value = InputActionValue.Get<FVector2D>();
+	// 	const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+	//
+	// 	if (Value.X != 0.0f)
+	// 	{
+	// 		const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+	// 		OwnerCharacter->AddMovementInput(MovementDirection, Value.X);
+	// 	}
+	//
+	// 	if (Value.Y != 0.0f)
+	// 	{
+	// 		const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+	// 		OwnerCharacter->AddMovementInput(MovementDirection, Value.Y);
+	// 	}
+	// }
 }
 
 void ABasePlayerController::Input_Jump(const FInputActionValue& InputActionValue)
 {
-	if (OwnerCharacter == nullptr)
+	if (OwnerCharacter == nullptr || 
+		GetPlayerMovementComponent() == nullptr)
 		return;
 	
-	const bool Value = InputActionValue.Get<bool>();
+	GetPlayerMovementComponent()->Jump(InputActionValue);
 	
-	if (Value)
-	{
-		OwnerCharacter->Jump();
-	}
+	// const bool Value = InputActionValue.Get<bool>();
+	//
+	// if (Value)
+	// {
+	// 	OwnerCharacter->Jump();
+	// }
 }
 
 void ABasePlayerController::Input_Fire(const FInputActionValue& InputActionValue)
@@ -152,12 +162,20 @@ void ABasePlayerController::Input_ExitSniper(const FInputActionValue& InputActio
 
 void ABasePlayerController::Input_EnterRun(const FInputActionValue& InputActionValue)
 {
-	GetCastOwnerCharacter()->SetSpeedToRun();
+	if (OwnerCharacter == nullptr || 
+		GetPlayerMovementComponent() == nullptr)
+		return;
+	
+	GetPlayerMovementComponent()->Run_Enter(InputActionValue);
 }
 
 void ABasePlayerController::Input_ExitRun(const FInputActionValue& InputActionValue)
 {
-	GetCastOwnerCharacter()->SetSpeedToWalk();
+	if (OwnerCharacter == nullptr || 
+		GetPlayerMovementComponent() == nullptr)
+		return;
+	
+	GetPlayerMovementComponent()->Run_Exit(InputActionValue);
 }
 
 ABaseCharacter* ABasePlayerController::GetCastOwnerCharacter()
@@ -167,4 +185,13 @@ ABaseCharacter* ABasePlayerController::GetCastOwnerCharacter()
 		CastOwnerCharacter = Cast<ABaseCharacter>(OwnerCharacter);
 	}
 	return CastOwnerCharacter;
+}
+
+UPlayerMovementComponent* ABasePlayerController::GetPlayerMovementComponent()
+{
+	if (GetCastOwnerCharacter() && !PlayerMovementComponent)
+	{
+		PlayerMovementComponent = Cast<UPlayerMovementComponent>(GetCastOwnerCharacter()->GetPlayerMovementComponent());
+	}
+	return PlayerMovementComponent;
 }

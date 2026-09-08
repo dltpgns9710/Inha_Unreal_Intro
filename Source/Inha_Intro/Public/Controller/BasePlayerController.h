@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "BasePlayerController.generated.h"
 
+class UPlayerMovementComponent;
 class ABaseCharacter;
 class UInputAction;
 class UInputMappingContext;
@@ -46,6 +47,8 @@ private:
 	TObjectPtr<ABaseCharacter> CastOwnerCharacter = nullptr;
 	UPROPERTY()
 	TObjectPtr<UUserWidget> CrossHairWidget = nullptr;
+	UPROPERTY()
+	TObjectPtr<UPlayerMovementComponent> PlayerMovementComponent = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> CrossHairWidgetClass;
@@ -59,5 +62,8 @@ private:
 	void Input_ExitSniper(const FInputActionValue& InputActionValue);
 	void Input_EnterRun(const FInputActionValue& InputActionValue);
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
+	
+protected:
 	ABaseCharacter* GetCastOwnerCharacter();
+	UPlayerMovementComponent* GetPlayerMovementComponent();
 };

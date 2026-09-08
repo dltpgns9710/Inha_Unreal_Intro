@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UPlayerBaseComponent;
 DECLARE_DELEGATE(FOnTrigger)
 
 class UNiagaraSystem;
@@ -36,6 +37,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<UPlayerBaseComponent> PlayerMovementComponent = nullptr;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom = nullptr;
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -68,10 +72,6 @@ private:
 	float BaseFov = 90.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Values")
 	float SniperLength = 5000.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float WalkSpeed = 300.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float RunSpeed = 600.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Values", meta = (AllowPrivateAccess = true))
 	EEquipWeapon EquipWeapon = EEquipWeapon::Rifle;
@@ -93,7 +93,6 @@ public:
 	void ToggleWeapon();
 	bool EnterSniper();
 	bool ExitSniper();
-	void SetSpeedToWalk();
-	void SetSpeedToRun();
 	EEquipWeapon GetEquipWeapon() const;
+	UPlayerBaseComponent* GetPlayerMovementComponent() const;
 };

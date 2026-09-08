@@ -5,6 +5,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Component/EnemyFSM.h"
+#include "Component/PlayerMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Projectile/BaseBullet.h"
@@ -15,6 +16,12 @@ ABaseCharacter::ABaseCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	PlayerMovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>("PlayerMovementComponent");
+	if (UPlayerMovementComponent* CastedMoventComponent = Cast<UPlayerMovementComponent>(PlayerMovementComponent))
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CastedMoventComponent->GetWalkSpeed();
+	}
+	
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/ThirdPersonTemplate/Characters/Mannequins/Meshes/SKM_Quinn_Simple.SKM_Quinn_Simple'"));
 	
 	if (MeshPath.Succeeded())
@@ -61,8 +68,6 @@ ABaseCharacter::ABaseCharacter()
 			SniperMesh->SetVisibility(false);
 		}
 	}
-	
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -108,7 +113,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 }
 
 void ABaseCharacter::Fire()
@@ -216,17 +221,12 @@ bool ABaseCharacter::ExitSniper()
 	return true;
 }
 
-void ABaseCharacter::SetSpeedToWalk()
-{
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-}
-
-void ABaseCharacter::SetSpeedToRun()
-{
-	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-}
-
 EEquipWeapon ABaseCharacter::GetEquipWeapon() const
 {
 	return EquipWeapon;
+}
+
+UPlayerBaseComponent* ABaseCharacter::GetPlayerMovementComponent() const
+{
+	return PlayerMovementComponent;
 }

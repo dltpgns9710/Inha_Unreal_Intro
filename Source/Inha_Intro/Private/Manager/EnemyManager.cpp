@@ -34,6 +34,8 @@ void AEnemyManager::Tick(float DeltaTime)
 
 void AEnemyManager::CreateEnemy()
 {
+	if (SpawnPoints.Num() == 0) return;
+	
 	int index = FMath::RandRange(0, SpawnPoints.Num() - 1);
 	GetWorld()->SpawnActor<AEnemy>(EnemyFactory, SpawnPoints[index]->GetActorLocation(), FRotator(0));
 	
