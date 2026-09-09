@@ -123,9 +123,8 @@ void ABasePlayerController::Input_WeaponToggle(const FInputActionValue& InputAct
 {
 	if (GetCastOwnerCharacter())
 	{
-		if (GetCastOwnerCharacter()->GetEquipWeapon() == EEquipWeapon::Sniper && CrossHairWidget)
+		if (CrossHairWidget)
 		{
-			GetCastOwnerCharacter()->ExitSniper();
 			CrossHairWidget->RemoveFromParent();
 			CrossHairWidget = nullptr;
 		}
