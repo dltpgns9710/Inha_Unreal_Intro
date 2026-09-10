@@ -47,4 +47,7 @@ protected:
 	
 	UFUNCTION(BlueprintCallable, Category = FSMEvent)
 	AEnemy* GetCastedOwner();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category=FSMEvent)
+	void PlayDamageAnim(FName SectionName);
 };

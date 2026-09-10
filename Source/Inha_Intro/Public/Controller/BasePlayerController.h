@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BasePlayerController.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FTest, float)
+
 class UPlayerMovementComponent;
 class ABaseCharacter;
 class UInputAction;
@@ -18,7 +20,7 @@ UCLASS()
 class INHA_INTRO_API ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

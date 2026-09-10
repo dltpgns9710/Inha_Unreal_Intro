@@ -10,7 +10,7 @@ class ABaseCharacter;
 class UNiagaraSystem;
 class ABaseBullet;
 
-UENUM()
+UENUM(BlueprintType)
 enum class EEquipWeapon : uint8
 {
 	Rifle,
@@ -64,6 +64,7 @@ public:
 	bool EnterSniper();
 	bool ExitSniper();
 	float GetBaseFOV();
+	UFUNCTION(BlueprintCallable)
 	EEquipWeapon GetEquipWeapon() const;
 	
 	FOnFire OnRifleFire;

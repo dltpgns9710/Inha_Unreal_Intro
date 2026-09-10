@@ -139,7 +139,6 @@ void UEnemyFSM::AttackState()
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 	if (CurrentTime > AttackDelayTime)
 	{
-		PRINT_LOG(TEXT("Attack"));	
 		CurrentTime = 0;
 		CachedAnim->SetCanAttackPlay(true);
 	}

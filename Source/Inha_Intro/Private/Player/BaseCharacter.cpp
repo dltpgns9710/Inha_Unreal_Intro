@@ -7,6 +7,7 @@
 #include "Component/PlayerMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -70,6 +71,7 @@ void ABaseCharacter::BeginPlay()
 	{
 		GetCastedAttackComponent()->OnRifleFire.BindUObject(this, &ThisClass::OnFireCallback);
 	}
+	Hp = InitHp;
 }
 
 APlayerController* ABaseCharacter::GetPlayerController()
@@ -88,6 +90,21 @@ UPlayerAttackComponent* ABaseCharacter::GetCastedAttackComponent()
 		CastedAttackComponent = Cast<UPlayerAttackComponent>(PlayerAttackComponent);
 	}
 	return CastedAttackComponent;
+}
+
+void ABaseCharacter::OnHitEvent()
+{
+	--Hp;
+	if (Hp <= 0)
+	{
+		GameOver();
+	}
+}
+
+void ABaseCharacter::GameOver()
+{
+	OnGameOver.Broadcast();
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
 void ABaseCharacter::SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible)
@@ -140,6 +157,7 @@ void ABaseCharacter::Fire()
 	RifleMesh->ToggleVisibility();
 	SniperMesh->ToggleVisibility();
 	GetCastedAttackComponent()->ToggleWeapon();
+	OnWeaponChange.Broadcast();
  }
 
  bool ABaseCharacter::EnterSniper()

@@ -6,10 +6,11 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+DECLARE_DELEGATE(FOnTrigger)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDynamicTrigger);
+
 class UPlayerAttackComponent;
 class UPlayerBaseComponent;
-DECLARE_DELEGATE(FOnTrigger)
-
 class UNiagaraSystem;
 class ABaseBullet;
 struct FInputActionValue;
@@ -30,7 +31,7 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<UPlayerBaseComponent> PlayerMovementComponent = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "Component")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly ,Category = "Component", meta=(AllowPrivateAccess=true))
 	TObjectPtr<UPlayerBaseComponent> PlayerAttackComponent = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
@@ -57,6 +58,19 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Values")
 	float HiddenMeshDist = 200.f;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta=(AllowPrivateAccess=true))
+	float Hp;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta=(AllowPrivateAccess=true))
+	float InitHp = 10;
+	
+	UPROPERTY(BlueprintAssignable, meta=( AllowPrivateAccess=true))
+	FOnDynamicTrigger OnWeaponChange;
+	
+	UPROPERTY(BlueprintAssignable, meta=( AllowPrivateAccess=true))
+	FOnDynamicTrigger OnGameOver;
+	
+	void GameOver();
+	
 	void SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible);
 	
 	void OnFireCallback();
@@ -67,6 +81,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	FOnTrigger OnFire;
+	
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void OnHitEvent();
 	
 	void Fire();
 	void ToggleWeapon();
