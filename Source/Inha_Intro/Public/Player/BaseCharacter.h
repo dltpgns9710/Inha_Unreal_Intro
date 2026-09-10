@@ -27,7 +27,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void PostInitializeComponents() override;
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<UPlayerBaseComponent> PlayerMovementComponent = nullptr;
@@ -61,7 +61,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta=(AllowPrivateAccess=true))
 	float Hp;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta=(AllowPrivateAccess=true))
-	float InitHp = 10;
+	float InitHp = 3;
 	
 	UPROPERTY(BlueprintAssignable, meta=( AllowPrivateAccess=true))
 	FOnDynamicTrigger OnWeaponChange;

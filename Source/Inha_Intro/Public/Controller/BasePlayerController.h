@@ -66,6 +66,7 @@ private:
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
 	
 protected:
+	UFUNCTION(BlueprintCallable)
 	ABaseCharacter* GetCastOwnerCharacter();
 	UPlayerMovementComponent* GetPlayerMovementComponent();
 };

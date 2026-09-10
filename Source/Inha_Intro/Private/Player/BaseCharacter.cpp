@@ -71,6 +71,12 @@ void ABaseCharacter::BeginPlay()
 	{
 		GetCastedAttackComponent()->OnRifleFire.BindUObject(this, &ThisClass::OnFireCallback);
 	}
+}
+
+void ABaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
 	Hp = InitHp;
 }
 
