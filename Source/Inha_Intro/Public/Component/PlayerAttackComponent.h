@@ -58,6 +58,17 @@ private:
 	TObjectPtr<ABaseCharacter> CastedOwnerCharacter;
 	ABaseCharacter* GetCastedCharacter();
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	TObjectPtr<UMaterialInterface> BulletDecalMaterial;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Decal")
+	FVector DecalSize = FVector(5.f, 5.f, 5.f);
+	UPROPERTY(EditDefaultsOnly, Category = "Effect|Decal")
+	float DecalLifetime = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	TObjectPtr<UNiagaraSystem> BeamParticles;
+	
 public:
 	void Fire();
 	void ToggleWeapon();

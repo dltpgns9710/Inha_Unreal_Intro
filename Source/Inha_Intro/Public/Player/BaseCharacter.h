@@ -91,9 +91,11 @@ public:
 	bool ExitSniper();
 	void SetCameraFOV(float NewFOV) const;
 	FTransform GetFireTransform() const;
+	FVector GetSniperFireLocation() const;
 	FVector GetCameraLocation() const;
 	FVector GetCameraForwardVector() const;
 	
 	UPlayerBaseComponent* GetPlayerMovementComponent() const;
 	UPlayerBaseComponent* GetPlayerAttackComponent() const;
+	USkeletalMeshComponent* GetWeaponMesh();
 };

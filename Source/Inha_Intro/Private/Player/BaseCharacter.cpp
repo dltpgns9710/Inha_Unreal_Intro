@@ -189,6 +189,11 @@ FTransform ABaseCharacter::GetFireTransform() const
 	return RifleMesh->GetSocketTransform(TEXT("MuzzleFlash"));
 }
 
+FVector ABaseCharacter::GetSniperFireLocation() const
+{
+	return SniperMesh->GetSocketTransform(TEXT("MuzzleFlash")).GetLocation();
+}
+
 FVector ABaseCharacter::GetCameraLocation() const
 {
 	if (!FollowCamera) return FVector();
@@ -209,4 +214,22 @@ UPlayerBaseComponent* ABaseCharacter::GetPlayerMovementComponent() const
 UPlayerBaseComponent* ABaseCharacter::GetPlayerAttackComponent() const
 {
 	return PlayerAttackComponent;
+}
+
+USkeletalMeshComponent* ABaseCharacter::GetWeaponMesh()
+{
+	if (GetCastedAttackComponent())
+	{
+		switch (GetCastedAttackComponent()->GetEquipWeapon())
+		{
+		case EEquipWeapon::Rifle:
+			return RifleMesh;
+		case EEquipWeapon::Sniper:
+			return SniperMesh;
+		case EEquipWeapon::None:
+		default:
+			return nullptr;
+		}
+	}
+	return nullptr;
 }

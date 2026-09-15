@@ -17,7 +17,8 @@ void UBaseCharacterAnimInstance::NativeInitializeAnimation()
 	{
 		MovementComponent = Character->GetCharacterMovement();
 	}
-	if (ABaseCharacter* CastCharacter = Cast<ABaseCharacter>(OwningPawn))
+	CastCharacter = Cast<ABaseCharacter>(OwningPawn);
+	if (CastCharacter)
 	{
 		CastCharacter->OnFire.BindUObject(this, &ThisClass::OnFire);
 	}
@@ -37,6 +38,22 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		
 		// 방향 계산
 		Direction = CalculateDirection(Velocity, Character->GetActorRotation());
+	}
+	
+	//if (AWeapon* Weapon = Character->playerFire->Weapon)
+	if (CastCharacter && CastCharacter->GetWeaponMesh())
+	{
+		// 무기의 LeftHandSocket 위치를 월드 좌표로 가져온다.
+		FTransform LeftHandWorldTransform = CastCharacter->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), ERelativeTransformSpace::RTS_World);
+
+		FVector OutPosition;
+		FRotator OutRotator;
+		Character->GetMesh()->TransformToBoneSpace(FName("hand_r"),
+			LeftHandWorldTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotator);
+
+		// hand_r 공간으로 변환한 좌표를 animation 좌표로 설정한다.
+		LeftHandTransform.SetLocation(OutPosition);
+		LeftHandTransform.SetRotation(FQuat(OutRotator));
 	}
 }
 

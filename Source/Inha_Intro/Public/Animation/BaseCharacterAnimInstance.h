@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "BaseCharacterAnimInstance.generated.h"
 
+class ABaseCharacter;
 /**
  * 
  */
@@ -19,7 +20,10 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
-	TObjectPtr<class ACharacter> Character = nullptr;
+	TObjectPtr<ACharacter> Character = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	TObjectPtr<ABaseCharacter> CastCharacter = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	TObjectPtr<class UCharacterMovementComponent> MovementComponent = nullptr;
@@ -44,6 +48,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 	float FireRecoveryTime = 1.5f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	FTransform LeftHandTransform;
 	
 private:
 	void OnFire();
