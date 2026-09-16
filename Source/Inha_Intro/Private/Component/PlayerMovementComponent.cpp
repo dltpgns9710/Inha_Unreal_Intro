@@ -90,3 +90,11 @@ float UPlayerMovementComponent::GetRunSpeed() const
 {
 	return RunSpeed;
 }
+
+float UPlayerMovementComponent::GetMaxWalkSpeed() const
+{
+	if (OwnerMovementComponent == nullptr)
+		return 0;
+	
+	return OwnerMovementComponent->MaxWalkSpeed;
+}

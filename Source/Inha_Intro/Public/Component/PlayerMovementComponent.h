@@ -24,6 +24,7 @@ public:
 	
 	float GetWalkSpeed() const;
 	float GetRunSpeed() const;
+	float GetMaxWalkSpeed() const;
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Values")
 	float WalkSpeed = 300.f;

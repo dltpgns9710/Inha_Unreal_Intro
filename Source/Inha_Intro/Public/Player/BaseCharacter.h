@@ -75,6 +75,11 @@ private:
 	
 	void OnFireCallback();
 	
+	float AO_StartYaw = 0;
+	float AO_Yaw = 0;
+	float AO_Pitch = 0;
+	void UpdateAimOffset(float DeltaTime);
+	
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -90,6 +95,8 @@ public:
 	bool EnterSniper();
 	bool ExitSniper();
 	void SetCameraFOV(float NewFOV) const;
+	float GetAoYaw();
+	float GetAoPitch();
 	FTransform GetFireTransform() const;
 	FVector GetSniperFireLocation() const;
 	FVector GetCameraLocation() const;

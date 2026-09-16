@@ -15,17 +15,32 @@ class INHA_INTRO_API ACrosshairHUD : public AHUD
 	GENERATED_BODY()
 public:
 	virtual void DrawHUD() override;
-	
+
+	void SetCrosshairSpread(float Spread) { CrosshairSpread = Spread; }
+	void SetCrosshairColor(FColor Color) { CrosshairColor = Color; }
+
 private:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UTexture2D> Crosshair_Center;
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UTexture2D> Crosshair_Left;
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UTexture2D> Crosshair_Right;
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UTexture2D> Crosshair_Top;
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UTexture2D> Crosshair_Down;
+	// 크로스헤어가 최종적으로 얼만큼 벌어져서 그려져야하는지
+	float CrosshairSpread = 0;
+	// 크로스헤어 색상값
+	FColor CrosshairColor = FColor::White;
+
+	void DrawCrossHair(UTexture2D* Texture, FVector2D Position, FVector2D Spread);
+	float ComputeMaxScreenspaceSpreadRadius();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UTexture2D> CrosshairsCenter;
+
+	// 네장의 상하좌우
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UTexture2D> CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UTexture2D> CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UTexture2D> CrosshairsTop;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UTexture2D> CrosshairsBottom;
 };

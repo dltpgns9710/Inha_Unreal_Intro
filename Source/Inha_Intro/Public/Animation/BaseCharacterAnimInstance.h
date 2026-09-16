@@ -52,6 +52,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	FTransform LeftHandTransform;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	float AO_Yaw = 0;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	float AO_Pitch = 0;
+	
 private:
 	void OnFire();
 	

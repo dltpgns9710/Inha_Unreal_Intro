@@ -24,6 +24,7 @@ class INHA_INTRO_API ABasePlayerController : public APlayerController
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputMappingContext> IMC;
@@ -64,6 +65,14 @@ private:
 	void Input_ExitSniper(const FInputActionValue& InputActionValue);
 	void Input_EnterRun(const FInputActionValue& InputActionValue);
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
+	
+	UPROPERTY(EditAnywhere, Category = "IHGame|Value")
+	float CrosshairSpreadMax = 6.f;
+
+	UPROPERTY(EditAnywhere, Category = "IHGame|Value")
+	float CrosshairSpreadMin = 2.f;
+
+	void UpdateCrossHair();
 	
 protected:
 	UFUNCTION(BlueprintCallable)

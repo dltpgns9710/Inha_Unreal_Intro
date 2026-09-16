@@ -38,8 +38,13 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		
 		// 방향 계산
 		Direction = CalculateDirection(Velocity, Character->GetActorRotation());
+		
 	}
-	
+	if (CastCharacter)
+	{
+		AO_Yaw = CastCharacter->GetAoYaw();
+		AO_Pitch = CastCharacter->GetAoPitch();
+	}
 	//if (AWeapon* Weapon = Character->playerFire->Weapon)
 	if (CastCharacter && CastCharacter->GetWeaponMesh())
 	{
