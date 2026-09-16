@@ -71,6 +71,7 @@ void ABaseWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 {
 	if (ABaseCharacter* CastedActor = Cast<ABaseCharacter>(OtherActor))
 	{
+		if (GetOwner() == CastedActor) return;
 		SetOwner(CastedActor);
 		CastedOwnerCharacter = CastedActor;
 		const USkeletalMeshSocket* HandSocket = CastedActor->GetMesh()->GetSocketByName(FName("hand_rSocket"));
@@ -82,8 +83,14 @@ void ABaseWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 			if (CastedActor->GetWeaponNum() != 0)
 			{
 				SetActorHiddenInGame(true);
+				CastedActor->PickupWeapon(this);
 			}
-			CastedActor->PickupWeapon(this);
+			else
+			{
+				CastedActor->PickupWeapon(this);
+				CastedActor->ToggleWeapon();
+			}
+			
 		}
 	}
 }
