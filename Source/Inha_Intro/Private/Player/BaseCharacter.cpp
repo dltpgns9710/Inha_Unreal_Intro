@@ -33,7 +33,7 @@ ABaseCharacter::ABaseCharacter()
 	PlayerAttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>("PlayerAttackComponent");
 	if (GetCastedAttackComponent())
 	{
-		SetCameraFOV(GetCastedAttackComponent()->GetBaseFOV());
+		SetCameraFOV(90);
 	}
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/ThirdPersonTemplate/Characters/Mannequins/Meshes/SKM_Quinn_Simple.SKM_Quinn_Simple'"));
 	
@@ -43,24 +43,24 @@ ABaseCharacter::ABaseCharacter()
 		SkeletalMeshComponent->SetSkeletalMesh(MeshPath.Object);
 		SkeletalMeshComponent->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
 	}
-	
-	RifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Rifle");
-	RifleMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> RifleMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Assault_Rifle_A.Assault_Rifle_A'"));
-	if (RifleMeshPath.Succeeded())
-	{
-		RifleMesh->SetSkeletalMesh(RifleMeshPath.Object);
-		RifleMesh->SetVisibility(true);
-	}
-	
-	SniperMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Sniper");
-	SniperMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));	
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> SniperMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Sniper_Rifle_A.Sniper_Rifle_A'"));
-	if (SniperMeshPath.Succeeded())
-	{
-		SniperMesh->SetSkeletalMesh(SniperMeshPath.Object);
-		SniperMesh->SetVisibility(false);
-	}
+	//
+	// RifleMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Rifle");
+	// RifleMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
+	// ConstructorHelpers::FObjectFinder<USkeletalMesh> RifleMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Assault_Rifle_A.Assault_Rifle_A'"));
+	// if (RifleMeshPath.Succeeded())
+	// {
+	// 	RifleMesh->SetSkeletalMesh(RifleMeshPath.Object);
+	// 	RifleMesh->SetVisibility(true);
+	// }
+	//
+	// SniperMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Sniper");
+	// SniperMesh->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));	
+	// ConstructorHelpers::FObjectFinder<USkeletalMesh> SniperMeshPath(TEXT("/Script/Engine.SkeletalMesh'/Game/Assets/MilitaryWeapSilver/Weapons/Sniper_Rifle_A.Sniper_Rifle_A'"));
+	// if (SniperMeshPath.Succeeded())
+	// {
+	// 	SniperMesh->SetSkeletalMesh(SniperMeshPath.Object);
+	// 	SniperMesh->SetVisibility(false);
+	// }
 }
 
 void ABaseCharacter::BeginPlay()
@@ -196,8 +196,7 @@ void ABaseCharacter::Fire()
  void ABaseCharacter::ToggleWeapon()
  {
 	if (!GetCastedAttackComponent()) return;
-	RifleMesh->ToggleVisibility();
-	SniperMesh->ToggleVisibility();
+	
 	GetCastedAttackComponent()->ToggleWeapon();
 	OnWeaponChange.Broadcast();
  }
@@ -230,14 +229,23 @@ float ABaseCharacter::GetAoPitch()
 	return AO_Pitch;
 }
 
-FTransform ABaseCharacter::GetFireTransform() const
+int ABaseCharacter::GetWeaponNum()
 {
-	return RifleMesh->GetSocketTransform(TEXT("MuzzleFlash"));
+	if (GetCastedAttackComponent())
+	{
+		return GetCastedAttackComponent()->WeaponNum();
+	}
+	return 0;
 }
 
-FVector ABaseCharacter::GetSniperFireLocation() const
+FTransform ABaseCharacter::GetFireTransform()
 {
-	return SniperMesh->GetSocketTransform(TEXT("MuzzleFlash")).GetLocation();
+	return GetCastedAttackComponent()->GetWeaponSkeletalMesh()->GetSocketTransform(TEXT("MuzzleFlash"));
+}
+
+FVector ABaseCharacter::GetSniperFireLocation()
+{
+	return GetFireTransform().GetLocation();
 }
 
 FVector ABaseCharacter::GetCameraLocation() const
@@ -266,16 +274,12 @@ USkeletalMeshComponent* ABaseCharacter::GetWeaponMesh()
 {
 	if (GetCastedAttackComponent())
 	{
-		switch (GetCastedAttackComponent()->GetEquipWeapon())
-		{
-		case EEquipWeapon::Rifle:
-			return RifleMesh;
-		case EEquipWeapon::Sniper:
-			return SniperMesh;
-		case EEquipWeapon::None:
-		default:
-			return nullptr;
-		}
+		return GetCastedAttackComponent()->GetWeaponSkeletalMesh();
 	}
 	return nullptr;
+}
+
+void ABaseCharacter::PickupWeapon(ABaseWeapon* TargetWeapon)
+{
+	GetCastedAttackComponent()->AddWeapon(TargetWeapon);
 }

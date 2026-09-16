@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class ABaseWeapon;
 DECLARE_DELEGATE(FOnTrigger)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDynamicTrigger);
 
@@ -33,11 +34,6 @@ private:
 	TObjectPtr<UPlayerBaseComponent> PlayerMovementComponent = nullptr;
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly ,Category = "Component", meta=(AllowPrivateAccess=true))
 	TObjectPtr<UPlayerBaseComponent> PlayerAttackComponent = nullptr;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> RifleMesh = nullptr;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> SniperMesh = nullptr;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<USpringArmComponent> CameraBoom = nullptr;
@@ -97,12 +93,15 @@ public:
 	void SetCameraFOV(float NewFOV) const;
 	float GetAoYaw();
 	float GetAoPitch();
-	FTransform GetFireTransform() const;
-	FVector GetSniperFireLocation() const;
+	int GetWeaponNum();
+	FTransform GetFireTransform();
+	FVector GetSniperFireLocation();
 	FVector GetCameraLocation() const;
 	FVector GetCameraForwardVector() const;
 	
 	UPlayerBaseComponent* GetPlayerMovementComponent() const;
 	UPlayerBaseComponent* GetPlayerAttackComponent() const;
 	USkeletalMeshComponent* GetWeaponMesh();
+	
+	void PickupWeapon(ABaseWeapon* TargetWeapon);
 };

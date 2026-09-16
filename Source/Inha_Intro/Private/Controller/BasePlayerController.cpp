@@ -59,19 +59,6 @@ void ABasePlayerController::Input_Look(const FInputActionValue& InputActionValue
 		return;
 	
 	GetPlayerMovementComponent()->Look(InputActionValue);
-	
-	// const FVector2D Value = InputActionValue.Get<FVector2D>();
-	//
-	// //UE_LOG(LogTemp,Warning,TEXT("%f, %f"), Value.X, Value.Y);
-	// if (Value.X != 0.0f)
-	// {
-	// 	OwnerCharacter->AddControllerYawInput(Value.X);
-	// }
-	//
-	// if (Value.Y != 0.0f)
-	// {
-	// 	OwnerCharacter->AddControllerPitchInput(-Value.Y);
-	// }
 }
 
 void ABasePlayerController::Input_Move(const FInputActionValue& InputActionValue)
@@ -81,26 +68,6 @@ void ABasePlayerController::Input_Move(const FInputActionValue& InputActionValue
 		return;
 
 	GetPlayerMovementComponent()->Move(InputActionValue);
-	
-	// AController* Controller = OwnerCharacter->GetController();
-	//
-	// if (Controller)
-	// {
-	// 	const FVector2D Value = InputActionValue.Get<FVector2D>();
-	// 	const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
-	//
-	// 	if (Value.X != 0.0f)
-	// 	{
-	// 		const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
-	// 		OwnerCharacter->AddMovementInput(MovementDirection, Value.X);
-	// 	}
-	//
-	// 	if (Value.Y != 0.0f)
-	// 	{
-	// 		const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
-	// 		OwnerCharacter->AddMovementInput(MovementDirection, Value.Y);
-	// 	}
-	// }
 }
 
 void ABasePlayerController::Input_Jump(const FInputActionValue& InputActionValue)
@@ -110,13 +77,6 @@ void ABasePlayerController::Input_Jump(const FInputActionValue& InputActionValue
 		return;
 	
 	GetPlayerMovementComponent()->Jump(InputActionValue);
-	
-	// const bool Value = InputActionValue.Get<bool>();
-	//
-	// if (Value)
-	// {
-	// 	OwnerCharacter->Jump();
-	// }
 }
 
 void ABasePlayerController::Input_Fire(const FInputActionValue& InputActionValue)

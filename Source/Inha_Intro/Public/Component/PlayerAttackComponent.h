@@ -4,19 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Component/PlayerBaseComponent.h"
+#include "Object/BaseWeapon.h"
 #include "PlayerAttackComponent.generated.h"
 
+class ABaseWeapon;
 class ABaseCharacter;
 class UNiagaraSystem;
 class ABaseBullet;
-
-UENUM(BlueprintType)
-enum class EEquipWeapon : uint8
-{
-	Rifle,
-	Sniper,
-	None
-};
 
 DECLARE_DELEGATE(FOnFire)
 
@@ -32,51 +26,29 @@ public:
 	UPlayerAttackComponent();
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Factory")
-	TSubclassOf<ABaseBullet> BulletFactory;
-	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	TObjectPtr<UNiagaraSystem> EffectFactory;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Values", meta = (AllowPrivateAccess = true))
-	EEquipWeapon EquipWeapon = EEquipWeapon::Rifle;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Camera")
-	TSubclassOf<UCameraShakeBase> CameraShake;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float InSniperFov = 45.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float BaseFov = 90.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float SniperLength = 5000.f;
-	
-	void FireRifle();
-	void FireSniper();
 	void SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible);
 	
 	UPROPERTY()
 	TObjectPtr<ABaseCharacter> CastedOwnerCharacter;
 	ABaseCharacter* GetCastedCharacter();
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	TObjectPtr<UMaterialInterface> BulletDecalMaterial;
+	UPROPERTY()
+	TArray<ABaseWeapon*> Weapons;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Effect|Decal")
-	FVector DecalSize = FVector(5.f, 5.f, 5.f);
-	UPROPERTY(EditDefaultsOnly, Category = "Effect|Decal")
-	float DecalLifetime = 5.f;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Effect")
-	TObjectPtr<UNiagaraSystem> BeamParticles;
+	int CurrentWeaponIndex = 0;
 	
 public:
 	void Fire();
 	void ToggleWeapon();
 	bool EnterSniper();
 	bool ExitSniper();
-	float GetBaseFOV();
-	UFUNCTION(BlueprintCallable)
-	EEquipWeapon GetEquipWeapon() const;
+	int WeaponNum();
+	void AddWeapon(ABaseWeapon* TargetWeapon);
+	void RemoveWeapon(ABaseWeapon* TargetWeapon);
 	
+	UFUNCTION(blueprintcallable)
+	EWeaponType GetWeaponType();
+	
+	USkeletalMeshComponent* GetWeaponSkeletalMesh();
 	FOnFire OnRifleFire;
 };
