@@ -75,7 +75,7 @@ int UPlayerAttackComponent::WeaponNum()
 
 void UPlayerAttackComponent::AddWeapon(ABaseWeapon* TargetWeapon)
 {
-	Weapons.Add(TargetWeapon);
+	Weapons.AddUnique(TargetWeapon);
 }
 
 void UPlayerAttackComponent::RemoveWeapon(ABaseWeapon* TargetWeapon)
