@@ -3,6 +3,9 @@
 
 #include "Projectile/BaseBullet.h"
 
+#include "NiagaraFunctionLibrary.h"
+#include "Character/Enemy.h"
+#include "Component/EnemyFSM.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
@@ -39,6 +42,8 @@ void ABaseBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SphereComponent->OnComponentHit.AddDynamic(this, &ThisClass::OnHit);
+	
 	FTimerHandle deathTimerHandle;
 	//GetWorld()->GetTimerManager().SetTimer(deathTimerHandle, this, &ABaseBullet::Die, LifeSpan, false);
 	GetWorld()->GetTimerManager().SetTimer(deathTimerHandle, 
@@ -57,6 +62,27 @@ void ABaseBullet::Tick(float DeltaTime)
 
 void ABaseBullet::Die()
 {
+	Destroy();
+}
+
+void ABaseBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	UObject* Target = OtherActor->GetDefaultSubobjectByName(TEXT("FSM"));
+	if (Target)
+	{
+		UEnemyFSM* EnemyFsm = Cast<UEnemyFSM>(Target);
+		EnemyFsm->OnDamageProcess();
+	}
+
+	FTransform bulletTrans;
+	bulletTrans.SetLocation(Hit.ImpactPoint);
+
+	if (BulletEffectFactory)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, BulletEffectFactory, Hit.ImpactPoint);
+	}
+
 	Destroy();
 }
 

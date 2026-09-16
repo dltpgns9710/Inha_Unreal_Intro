@@ -18,8 +18,6 @@ class INHA_INTRO_API AHitScanWeapon : public ABaseWeapon
 public:
 	bool virtual EnterSniper() override;
 	bool virtual ExitSniper() override;
-	
-protected:
 	virtual void Fire() override;
 	
 private:

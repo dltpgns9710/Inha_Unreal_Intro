@@ -15,7 +15,7 @@ class INHA_INTRO_API AProjectileWeapon : public ABaseWeapon
 {
 	GENERATED_BODY()
 	
-protected:
+public:
 	virtual void Fire() override;
 
 private:

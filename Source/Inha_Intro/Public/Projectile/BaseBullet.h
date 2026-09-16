@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BaseBullet.generated.h"
 
+class UNiagaraSystem;
 class USphereComponent;
 class UProjectileMovementComponent;
 
@@ -31,6 +32,12 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Movement", meta=(AllowPrivateAccess=true))
 	float LifeSpan = 2.0;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Effect")
+	TObjectPtr<UNiagaraSystem> BulletEffectFactory;
+	
+	UFUNCTION()  // 놓치면, 함수 콜백 안옵니다.
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 public:
 	UPROPERTY(VisibleAnywhere, Category="Movement")
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
