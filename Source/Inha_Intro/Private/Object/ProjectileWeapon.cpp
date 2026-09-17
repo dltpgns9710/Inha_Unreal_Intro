@@ -8,6 +8,8 @@
 
 void AProjectileWeapon::Fire()
 {
+	Super::Fire();
+	
 	if (!GetCastedCharacter()) return;
 	
 	FTransform FirePosition = GetCastedCharacter()->GetFireTransform();

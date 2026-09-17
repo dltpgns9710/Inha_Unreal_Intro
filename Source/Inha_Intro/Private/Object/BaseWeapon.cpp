@@ -45,6 +45,28 @@ void ABaseWeapon::BeginPlay()
 
 void ABaseWeapon::Fire()
 {
+	if (WeaponMesh && FireWeaponAnimation)
+	{
+		WeaponMesh->PlayAnimation(FireWeaponAnimation, false);
+	}
+}
+
+void ABaseWeapon::LinkAnimLayer()
+{
+	USkeletalMeshComponent* CharacterMesh = GetCastedCharacter()->GetMesh();
+	if (CharacterMesh && WeaponLayerClass)
+	{
+		CharacterMesh->LinkAnimClassLayers(WeaponLayerClass);
+	}
+}
+
+void ABaseWeapon::UnlinkAnimLayer()
+{
+	USkeletalMeshComponent* CharacterMesh = GetCastedCharacter()->GetMesh();
+	if (CharacterMesh && WeaponLayerClass)
+	{
+		CharacterMesh->UnlinkAnimClassLayers(WeaponLayerClass);
+	}
 }
 
 USkeletalMeshComponent* ABaseWeapon::GetMesh()
@@ -87,6 +109,7 @@ void ABaseWeapon::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 			}
 			else
 			{
+				CastedActor->UnlinkBaseAnimLayer();
 				CastedActor->PickupWeapon(this);
 				CastedActor->ToggleWeapon();
 			}

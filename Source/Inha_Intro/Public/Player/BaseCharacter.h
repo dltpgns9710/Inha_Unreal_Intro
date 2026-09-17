@@ -51,6 +51,9 @@ private:
 	TObjectPtr<UPlayerAttackComponent> CastedAttackComponent;
 	UPlayerAttackComponent* GetCastedAttackComponent();
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UAnimInstance> DefaultLayerClass;
+	
 	UPROPERTY(EditAnywhere, Category = "Values")
 	float HiddenMeshDist = 200.f;
 	
@@ -88,8 +91,11 @@ public:
 	
 	void Fire();
 	void ToggleWeapon();
+	void LinkBaseAnimLayer();
+	void UnlinkBaseAnimLayer();
 	bool EnterSniper();
 	bool ExitSniper();
+	bool IsUnarmed();
 	void SetCameraFOV(float NewFOV) const;
 	float GetAoYaw();
 	float GetAoPitch();

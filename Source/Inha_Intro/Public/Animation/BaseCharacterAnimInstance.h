@@ -46,6 +46,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 	bool bIsFire = false;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	bool bIsUnarmed = true;
+	
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 	float FireRecoveryTime = 1.5f;
 	

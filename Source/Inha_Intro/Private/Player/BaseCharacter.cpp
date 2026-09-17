@@ -72,6 +72,8 @@ void ABaseCharacter::BeginPlay()
 		GetCastedAttackComponent()->OnRifleFire.BindUObject(this, &ThisClass::OnFireCallback);
 	}
 	AO_StartYaw = GetController()->GetControlRotation().Yaw;
+	
+	LinkBaseAnimLayer();
 }
 
 void ABaseCharacter::PostInitializeComponents()
@@ -201,17 +203,42 @@ void ABaseCharacter::Fire()
 	OnWeaponChange.Broadcast();
  }
 
- bool ABaseCharacter::EnterSniper()
- {
-	if (!GetCastedAttackComponent()) return false;
-	return GetCastedAttackComponent()->EnterSniper();
- }
-//
- bool ABaseCharacter::ExitSniper()
- {
-	if (!GetCastedAttackComponent()) return false;
-	return GetCastedAttackComponent()->ExitSniper();
- }
+void ABaseCharacter::LinkBaseAnimLayer()
+{
+	if (DefaultLayerClass && GetMesh())
+	{
+		GetMesh()->LinkAnimClassLayers(DefaultLayerClass);
+	}
+}
+
+void ABaseCharacter::UnlinkBaseAnimLayer()
+{
+	if (DefaultLayerClass && GetMesh())
+	{
+		GetMesh()->UnlinkAnimClassLayers(DefaultLayerClass);
+	}
+}
+
+bool ABaseCharacter::EnterSniper()
+{
+if (!GetCastedAttackComponent()) return false;
+return GetCastedAttackComponent()->EnterSniper();
+}
+
+bool ABaseCharacter::ExitSniper()
+{
+if (!GetCastedAttackComponent()) return false;
+return GetCastedAttackComponent()->ExitSniper();\
+}
+
+bool ABaseCharacter::IsUnarmed()
+{
+	if (GetCastedAttackComponent())
+	{
+		return GetCastedAttackComponent()->WeaponNum() == 0;
+	}
+	return true;
+}
 
 void ABaseCharacter::SetCameraFOV(float NewFOV) const
 {

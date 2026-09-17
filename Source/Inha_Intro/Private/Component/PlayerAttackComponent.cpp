@@ -40,12 +40,14 @@ void UPlayerAttackComponent::ToggleWeapon()
 {
 	if (Weapons.IsEmpty()) return;
 	
+	Weapons[CurrentWeaponIndex]->UnlinkAnimLayer();
 	Weapons[CurrentWeaponIndex]->SetActorHiddenInGame(true);
 	
 	++CurrentWeaponIndex;
 
 	if (Weapons.Num() <= CurrentWeaponIndex) CurrentWeaponIndex = 0;
 	
+	Weapons[CurrentWeaponIndex]->LinkAnimLayer();
 	Weapons[CurrentWeaponIndex]->SetActorHiddenInGame(false);
 }
 

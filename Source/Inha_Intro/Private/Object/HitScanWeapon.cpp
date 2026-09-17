@@ -30,6 +30,8 @@ bool AHitScanWeapon::ExitSniper()
 
 void AHitScanWeapon::Fire()
 {
+	Super::Fire();
+	
 	if (!GetCastedCharacter()) return;
 	
 	FHitResult HitInfo;

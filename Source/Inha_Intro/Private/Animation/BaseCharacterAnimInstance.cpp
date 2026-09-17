@@ -44,6 +44,7 @@ void UBaseCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		AO_Yaw = CastCharacter->GetAoYaw();
 		AO_Pitch = CastCharacter->GetAoPitch();
+		bIsUnarmed = CastCharacter->IsUnarmed();
 	}
 	//if (AWeapon* Weapon = Character->playerFire->Weapon)
 	if (CastCharacter && CastCharacter->GetWeaponMesh())

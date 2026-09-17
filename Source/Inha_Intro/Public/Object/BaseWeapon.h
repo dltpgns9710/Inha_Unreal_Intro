@@ -6,12 +6,14 @@
 #include "GameFramework/Actor.h"
 #include "BaseWeapon.generated.h"
 
+class USphereComponent;
 class ABaseCharacter;
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	Rifle,
 	Sniper,
+	Pistol,
 	None
 };
 
@@ -27,6 +29,8 @@ public:
 	bool virtual EnterSniper();
 	bool virtual ExitSniper();
 	virtual void Fire();
+	void LinkAnimLayer();
+	void UnlinkAnimLayer();
 	USkeletalMeshComponent* GetMesh();
 	EWeaponType GetWeaponType();
 protected:
@@ -41,14 +45,20 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShake;
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon", meta = (AllowPrivateAccess = true))
-	TObjectPtr<class USkeletalMeshComponent> WeaponMesh = nullptr;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon", meta = (AllowPrivateAccess = true))
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category="Weapon");
-	TObjectPtr<class USphereComponent> CollisionComp;
+	UPROPERTY(VisibleAnywhere, Category="Weapon");
+	TObjectPtr<USphereComponent> CollisionComp;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	EWeaponType WeaponType = EWeaponType::Rifle;
+	
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<UAnimationAsset> FireWeaponAnimation;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TSubclassOf<UAnimInstance> WeaponLayerClass;
 	
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent,
