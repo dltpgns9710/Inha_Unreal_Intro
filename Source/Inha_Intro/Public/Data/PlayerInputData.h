@@ -34,6 +34,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FInputActionData> InputActions;
+	
 public:
 	UInputMappingContext* GetIMC();
 	UInputAction* GetInputActionByTag(FGameplayTag FindTag);
