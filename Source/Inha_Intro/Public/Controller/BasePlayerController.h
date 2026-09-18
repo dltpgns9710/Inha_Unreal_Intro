@@ -3,16 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnhancedInputComponent.h"
+#include "GameplayTagContainer.h"
+#include "Data/PlayerInputData.h"
 #include "GameFramework/PlayerController.h"
 #include "BasePlayerController.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FTest, float)
-
+class UPlayerInputData;
 class UPlayerMovementComponent;
 class ABaseCharacter;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
+
 /**
  * 
  */
@@ -27,21 +30,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputMappingContext> IMC;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Look;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Move;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Jump;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Fire;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_WeaponToggle;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Sniper;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UInputAction> IA_Run;
+	TObjectPtr<UPlayerInputData> InputDataAsset;
 	
 private:
 	UPROPERTY()
@@ -66,6 +55,9 @@ private:
 	void Input_EnterRun(const FInputActionValue& InputActionValue);
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
 	
+	template <class UserObject, typename CallbackFunc>
+	void BindActionByTag(UEnhancedInputComponent* EnhancedInputComponent, FGameplayTag ActionTag, ETriggerEvent Trigger, UserObject* ContextObject, CallbackFunc Func);
+	
 	UPROPERTY(EditAnywhere, Category = "IHGame|Value")
 	float CrosshairSpreadMax = 6.f;
 
@@ -79,3 +71,16 @@ protected:
 	ABaseCharacter* GetCastOwnerCharacter();
 	UPlayerMovementComponent* GetPlayerMovementComponent();
 };
+
+//원래는 UEnhancedInputComponent 상속받은 클래스에서 하는게 맞음
+template <class UserObject, typename CallbackFunc>
+void ABasePlayerController::BindActionByTag(UEnhancedInputComponent* EnhancedInputComponent, FGameplayTag ActionTag,
+	ETriggerEvent Trigger, UserObject* ContextObject, CallbackFunc Func)
+{
+	if (!InputDataAsset || !EnhancedInputComponent) return;
+	
+	if (InputDataAsset->GetInputActionByTag(ActionTag))
+	{
+		EnhancedInputComponent->BindAction(InputDataAsset->GetInputActionByTag(ActionTag), Trigger, ContextObject, Func);
+	}
+}

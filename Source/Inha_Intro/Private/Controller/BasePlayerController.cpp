@@ -7,10 +7,12 @@
 #include "InputActionValue.h"
 #include "Blueprint/UserWidget.h"
 #include "Component/PlayerMovementComponent.h"
+#include "Data/PlayerInputData.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/BaseCharacter.h"
 #include "Projectile/BaseBullet.h"
+#include "Public/GameplayTags.h"
 #include "UI/CrosshairHUD.h"
 
 void ABasePlayerController::BeginPlay()
@@ -24,24 +26,26 @@ void ABasePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	
+	if (!InputDataAsset) return;
+	
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	if (Subsystem)
+	if (Subsystem && InputDataAsset->GetIMC())
 	{
-		Subsystem->AddMappingContext(IMC, 0);
+		Subsystem->AddMappingContext(InputDataAsset->GetIMC(), 0);
 	}
 	
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	if (EnhancedInputComponent)
 	{
-		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Look);
-		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Move);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Started, this, &ABasePlayerController::Input_Jump);
-		EnhancedInputComponent->BindAction(IA_Fire, ETriggerEvent::Started, this, &ABasePlayerController::Input_Fire);
-		EnhancedInputComponent->BindAction(IA_WeaponToggle, ETriggerEvent::Started, this, &ABasePlayerController::Input_WeaponToggle);
-		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterSniper);
-		EnhancedInputComponent->BindAction(IA_Sniper, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitSniper);
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterRun);
-		EnhancedInputComponent->BindAction(IA_Run, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitRun);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Look, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Look);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Move, ETriggerEvent::Triggered, this, &ABasePlayerController::Input_Move);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Jump, ETriggerEvent::Started, this, &ABasePlayerController::Input_Jump);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Fire, ETriggerEvent::Started, this, &ABasePlayerController::Input_Fire);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_WeaponToggle, ETriggerEvent::Started, this, &ABasePlayerController::Input_WeaponToggle);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Sniper, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterSniper);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Sniper, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitSniper);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Run, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterRun);
+		BindActionByTag(EnhancedInputComponent, GamePlayTags::Input_Action_Run, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitRun);
 	}
 }
 
