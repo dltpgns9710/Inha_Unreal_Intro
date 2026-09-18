@@ -29,9 +29,6 @@ protected:
 	virtual void SetupInputComponent() override;
 	virtual void Tick(float DeltaSeconds) override;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	TObjectPtr<UPlayerInputData> InputDataAsset;
-	
 private:
 	UPROPERTY()
 	TObjectPtr<ACharacter> OwnerCharacter = nullptr;
@@ -55,9 +52,6 @@ private:
 	void Input_EnterRun(const FInputActionValue& InputActionValue);
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
 	
-	template <class UserObject, typename CallbackFunc>
-	void BindActionByTag(UEnhancedInputComponent* EnhancedInputComponent, FGameplayTag ActionTag, ETriggerEvent Trigger, UserObject* ContextObject, CallbackFunc Func);
-	
 	UPROPERTY(EditAnywhere, Category = "IHGame|Value")
 	float CrosshairSpreadMax = 6.f;
 
@@ -71,16 +65,3 @@ protected:
 	ABaseCharacter* GetCastOwnerCharacter();
 	UPlayerMovementComponent* GetPlayerMovementComponent();
 };
-
-//원래는 UEnhancedInputComponent 상속받은 클래스에서 하는게 맞음
-template <class UserObject, typename CallbackFunc>
-void ABasePlayerController::BindActionByTag(UEnhancedInputComponent* EnhancedInputComponent, FGameplayTag ActionTag,
-	ETriggerEvent Trigger, UserObject* ContextObject, CallbackFunc Func)
-{
-	if (!InputDataAsset || !EnhancedInputComponent) return;
-	
-	if (InputDataAsset->GetInputActionByTag(ActionTag))
-	{
-		EnhancedInputComponent->BindAction(InputDataAsset->GetInputActionByTag(ActionTag), Trigger, ContextObject, Func);
-	}
-}
