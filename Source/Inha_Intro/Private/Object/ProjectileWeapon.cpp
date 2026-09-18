@@ -13,8 +13,13 @@ void AProjectileWeapon::Fire()
 	if (!GetCastedCharacter()) return;
 	
 	FTransform FirePosition = GetCastedCharacter()->GetFireTransform();
-	GetWorld()->SpawnActor<ABaseBullet>(BulletFactory, FirePosition);
-	
+	//GetWorld()->SpawnActor<ABaseBullet>(BulletFactory, FirePosition);
+	ABaseBullet* SpawnedBullet = GetWorld()->SpawnActorDeferred<ABaseBullet>(BulletFactory, FirePosition, GetOwner());
+	if (SpawnedBullet)
+	{
+		SpawnedBullet->AddIgnoreCollisionActor(GetOwner());
+		SpawnedBullet->FinishSpawning(FirePosition);
+	}
 	// 카메라 셰이크 재생
 	APlayerController* PlayerController = Cast<APlayerController>(GetCastedCharacter()->GetController());
 	if (PlayerController && CameraShake)

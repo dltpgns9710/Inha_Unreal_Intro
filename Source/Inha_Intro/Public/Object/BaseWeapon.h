@@ -14,6 +14,7 @@ enum class EWeaponType : uint8
 	Rifle,
 	Sniper,
 	Pistol,
+	RocketLauncher,
 	None
 };
 

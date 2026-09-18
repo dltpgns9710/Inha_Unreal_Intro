@@ -38,11 +38,14 @@ private:
 	
 	UFUNCTION()  // 놓치면, 함수 콜백 안옵니다.
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-public:
+
 	UPROPERTY(VisibleAnywhere, Category="Movement")
 	TObjectPtr<UProjectileMovementComponent> MovementComponent;
 	UPROPERTY(VisibleAnywhere, Category="Collision")
 	TObjectPtr<USphereComponent> SphereComponent;
 	UPROPERTY(VisibleAnywhere, Category="BodyMesh")
-	TObjectPtr<UStaticMeshComponent> StaticMeshComponent; 
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+	
+public:
+	void AddIgnoreCollisionActor(AActor* IgnoreActor);
 };

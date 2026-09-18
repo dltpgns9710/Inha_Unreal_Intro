@@ -17,6 +17,7 @@ ABaseBullet::ABaseBullet()
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	SphereComponent->SetCollisionProfileName("BlockAll");
+	SphereComponent->SetCollisionObjectType(ECollisionChannel::ECC_Vehicle);
 	SphereComponent->SetSphereRadius(13);
 	SetRootComponent(SphereComponent);
 	
@@ -84,5 +85,13 @@ void ABaseBullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	}
 
 	Destroy();
+}
+
+void ABaseBullet::AddIgnoreCollisionActor(AActor* IgnoreActor)
+{
+	if (IgnoreActor)
+	{
+		SphereComponent->IgnoreActorWhenMoving(IgnoreActor, true);
+	}
 }
 
