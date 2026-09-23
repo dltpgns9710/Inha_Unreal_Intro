@@ -35,7 +35,10 @@ void UEnemyFSM::BeginPlay()
 	Owner = Cast<AEnemy>(GetOwner());
 	
 	CachedAnim = Cast<UEnemyAnimation>(Owner->GetMesh()->GetAnimInstance());
-	OwnerAiController = Cast<AAIController>(Owner->GetController());
+	if (Owner && Owner->HasAuthority())
+	{
+		OwnerAiController = Cast<AAIController>(Owner->GetController());
+	}
 }
 
 
@@ -44,6 +47,10 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	if (!OwnerAiController) return;
+	
 	switch (State) {
 	case EEnemyState::Idle:
 		IdleState();
@@ -65,6 +72,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UEnemyFSM::IdleState()
 {
+	if (!Owner->HasAuthority()) return;
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 	if (CurrentTime > IdleDelayTime)
 	{
@@ -77,6 +85,10 @@ void UEnemyFSM::IdleState()
 
 void UEnemyFSM::MoveState()
 {
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	if (!OwnerAiController) return;
+	
 	FVector Destination = Target->GetActorLocation();
 	FVector Dir = Destination - Owner->GetActorLocation();
 	
@@ -123,6 +135,9 @@ void UEnemyFSM::MoveState()
 
 void UEnemyFSM::AttackState()
 {
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	
 	FVector DirectionToTarget = (Target->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal();
 	float DotResult = FVector::DotProduct(Owner->GetActorForwardVector(), DirectionToTarget);
 	bool isInSight = DotResult >= FMath::Cos(FMath::DegreesToRadians(SightDegree/2));
@@ -146,6 +161,10 @@ void UEnemyFSM::AttackState()
 
 void UEnemyFSM::OnDamageProcess()
 {
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	if (!OwnerAiController) return;
+	
 	--Hp;
 	if (Hp > 0)
 	{
@@ -169,7 +188,11 @@ void UEnemyFSM::OnDamageProcess()
 
 bool UEnemyFSM::GetRandomPositionInNavMesh(FVector Center, float Radius, FVector& Dest)
 {
+	if (!Owner) return false;
+	if (!Owner->HasAuthority()) return false;
+	
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	if (!NavSystem) return false;
 	FNavLocation NavLocation;
 	bool Result = NavSystem->GetRandomReachablePointInRadius(Center, Radius, NavLocation);
 	Dest = NavLocation.Location;
@@ -178,6 +201,9 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector Center, float Radius, FVector
 
 void UEnemyFSM::DamageState()
 {
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	
 	CurrentTime += GetWorld()->GetDeltaSeconds();
 	if (CurrentTime > DamageDelayTime)
 	{
@@ -189,6 +215,9 @@ void UEnemyFSM::DamageState()
 
 void UEnemyFSM::DieState()
 {
+	if (!Owner) return;
+	if (!Owner->HasAuthority()) return;
+	
 	if (!CachedAnim->IsDieDone()) return;
 	
 	FVector P0 = Owner->GetActorLocation();

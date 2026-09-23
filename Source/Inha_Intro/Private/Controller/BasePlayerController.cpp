@@ -162,6 +162,9 @@ void ABasePlayerController::UpdateCrossHair()
 	if (HUD == nullptr)
 		return;
 
+	if (!GetPlayerMovementComponent() || !GetCastOwnerCharacter())
+		return;
+	
 	// 1. 이동이 있으면 크로스헤어 벌어진다.
 	// Velocity 값 기준으로 얼만큼 벌어지게 할지 결정.
 	// 최대 이속 대비, 현재 이속값을 계산해서 얼마나 크로스헤어가 벌어지는지 계산

@@ -71,7 +71,10 @@ void ABaseCharacter::BeginPlay()
 	{
 		GetCastedAttackComponent()->OnRifleFire.BindUObject(this, &ThisClass::OnFireCallback);
 	}
-	AO_StartYaw = GetController()->GetControlRotation().Yaw;
+	if (GetController())
+	{
+		AO_StartYaw = GetController()->GetControlRotation().Yaw;
+	}
 	
 	LinkBaseAnimLayer();
 }
@@ -135,6 +138,7 @@ void ABaseCharacter::OnFireCallback()
 
 void ABaseCharacter::UpdateAimOffset(float DeltaTime)
 {
+	if (!GetController()) return;
 	FVector Velocity = GetVelocity();
 	float Speed = Velocity.Size2D();  // 높이에 대한 속도는 무시하고, 수평속도만 계산
 	bool bIsInAir = GetCharacterMovement()->IsFalling();
