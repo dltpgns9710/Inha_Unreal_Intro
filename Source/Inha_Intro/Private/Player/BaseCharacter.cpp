@@ -178,7 +178,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	float dist = FVector::Dist(GetActorLocation(), FollowCamera->GetComponentLocation());
 	if (dist <= HiddenMeshDist)
 	{
-		GetMesh()->SetVisibility(false);
+		if (UGameplayStatics::GetPlayerController(this, 0) == GetOwner()) GetMesh()->SetVisibility(false);
 	}
 	else
 	{
