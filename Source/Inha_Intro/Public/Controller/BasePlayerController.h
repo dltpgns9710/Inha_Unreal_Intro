@@ -51,6 +51,9 @@ private:
 	void Input_ExitSniper(const FInputActionValue& InputActionValue);
 	void Input_EnterRun(const FInputActionValue& InputActionValue);
 	void Input_ExitRun(const FInputActionValue& InputActionValue);
+	void Input_Interact(const FInputActionValue& InputActionValue);
+	
+	void PrintLogWithRole(const AActor* WorldContextObject, FString Text, FLinearColor TextColor, float Duration);
 	
 	UPROPERTY(EditAnywhere, Category = "IHGame|Value")
 	float CrosshairSpreadMax = 6.f;

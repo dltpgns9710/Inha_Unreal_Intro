@@ -11,6 +11,7 @@
 #include "Data/PlayerInputData.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Player/BaseCharacter.h"
 #include "Projectile/BaseBullet.h"
 #include "Public/GameplayTags.h"
@@ -52,6 +53,7 @@ void ABasePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindActionByTag(GamePlayTags::Input_Action_Sniper, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitSniper);
 		EnhancedInputComponent->BindActionByTag(GamePlayTags::Input_Action_Run, ETriggerEvent::Started, this, &ABasePlayerController::Input_EnterRun);
 		EnhancedInputComponent->BindActionByTag(GamePlayTags::Input_Action_Run, ETriggerEvent::Completed, this, &ABasePlayerController::Input_ExitRun);
+		EnhancedInputComponent->BindActionByTag(GamePlayTags::Input_Action_Interact, ETriggerEvent::Started, this, &ABasePlayerController::Input_Interact);
 	}
 }
 
@@ -153,6 +155,56 @@ void ABasePlayerController::Input_ExitRun(const FInputActionValue& InputActionVa
 		return;
 	
 	GetPlayerMovementComponent()->Run_Exit(InputActionValue);
+}
+
+void ABasePlayerController::Input_Interact(const FInputActionValue& InputActionValue)
+{
+	PrintLogWithRole(this, TEXT("F Interact"), FColor::Cyan, 1);
+}
+
+void ABasePlayerController::PrintLogWithRole(const AActor* WorldContextObject, FString Text, FLinearColor TextColor,
+	float Duration)
+{
+	if (!WorldContextObject)
+	{
+		return;
+	}
+
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::ReturnNull);
+	if (World)
+	{
+		if (World->WorldType == EWorldType::PIE)
+		{
+			UKismetSystemLibrary::PrintString(WorldContextObject, Text, true, true, TextColor, Duration);
+		}
+		else
+		{
+			FString ModeMsg;
+			switch (World->GetNetMode())
+			{
+			case NM_Standalone:
+				{
+					ModeMsg = TEXT("Server");
+				}break;
+			case NM_DedicatedServer:
+			case NM_ListenServer:
+				{
+					ModeMsg = TEXT("Server");
+				}break;
+			case NM_Client:
+				{
+					ModeMsg = TEXT("Client");
+				}break;
+			default:
+				{
+					ModeMsg = TEXT("Unknown");
+				}break;
+			}
+			Text.InsertAt(0, FString::Printf(TEXT("%s : "), *ModeMsg));
+
+			GEngine->AddOnScreenDebugMessage(-1, Duration, TextColor.ToFColor(true), Text);
+		}
+	}
 }
 
 void ABasePlayerController::UpdateCrossHair()
