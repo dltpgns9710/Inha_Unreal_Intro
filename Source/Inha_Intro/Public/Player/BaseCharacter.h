@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+struct FInha_CharacterStats;
 class ABaseWeapon;
 DECLARE_DELEGATE(FOnTrigger)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDynamicTrigger);
@@ -79,6 +80,7 @@ private:
 	float AO_Pitch = 0;
 	void UpdateAimOffset(float DeltaTime);
 	
+	FInha_CharacterStats* CharacterStats;
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -110,4 +112,7 @@ public:
 	USkeletalMeshComponent* GetWeaponMesh();
 	
 	void PickupWeapon(ABaseWeapon* TargetWeapon);
+	void UpdateCharacterStats(int32 CharacterLevel);
+	
+	FORCEINLINE FInha_CharacterStats* GetCharacterStats() { return CharacterStats; }
 };

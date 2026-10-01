@@ -18,4 +18,7 @@ class INHA_INTRO_API UMyGameInstance : public UGameInstance
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UPlayerInputData> InputDataAsset;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Character Data")
+	TObjectPtr<UDataTable> CharacterDataTable;
 };

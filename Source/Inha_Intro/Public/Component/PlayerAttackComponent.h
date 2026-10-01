@@ -29,10 +29,6 @@ private:
 	void SetSkeletalMeshVisibility(USkeletalMeshComponent* Target, bool Visible);
 	
 	UPROPERTY()
-	TObjectPtr<ABaseCharacter> CastedOwnerCharacter;
-	ABaseCharacter* GetCastedCharacter();
-	
-	UPROPERTY()
 	TArray<ABaseWeapon*> Weapons;
 	
 	int CurrentWeaponIndex = 0;

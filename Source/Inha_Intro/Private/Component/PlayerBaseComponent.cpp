@@ -4,6 +4,7 @@
 #include "Component/PlayerBaseComponent.h"
 
 #include "GameFramework/Character.h"
+#include "Player/BaseCharacter.h"
 
 // Sets default values for this component's properties
 UPlayerBaseComponent::UPlayerBaseComponent()
@@ -26,6 +27,14 @@ void UPlayerBaseComponent::BeginPlay()
 	if (OwnerCharacter) OwnerMovementComponent = OwnerCharacter->GetCharacterMovement();
 }
 
+ABaseCharacter* UPlayerBaseComponent::GetCastedCharacter()
+{
+	if (!CastedOwnerCharacter)
+	{
+		CastedOwnerCharacter = Cast<ABaseCharacter>(OwnerCharacter);
+	}
+	return CastedOwnerCharacter;
+}
 
 // Called every frame
 void UPlayerBaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

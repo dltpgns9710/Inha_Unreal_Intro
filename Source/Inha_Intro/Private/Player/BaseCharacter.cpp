@@ -5,9 +5,11 @@
 #include "Camera/CameraComponent.h"
 #include "Component/PlayerAttackComponent.h"
 #include "Component/PlayerMovementComponent.h"
+#include "Data/Inha_CharacterStats.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/MyGameInstance.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -25,10 +27,6 @@ ABaseCharacter::ABaseCharacter()
 	FollowCamera->SetupAttachment(CameraBoom);
 	
 	PlayerMovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>("PlayerMovementComponent");
-	if (UPlayerMovementComponent* CastedMoventComponent = Cast<UPlayerMovementComponent>(PlayerMovementComponent))
-	{
-		GetCharacterMovement()->MaxWalkSpeed = CastedMoventComponent->GetWalkSpeed();
-	}
 	
 	PlayerAttackComponent = CreateDefaultSubobject<UPlayerAttackComponent>("PlayerAttackComponent");
 	if (GetCastedAttackComponent())
@@ -77,6 +75,7 @@ void ABaseCharacter::BeginPlay()
 	}
 	
 	LinkBaseAnimLayer();
+	UpdateCharacterStats(1);
 }
 
 void ABaseCharacter::PostInitializeComponents()
@@ -313,4 +312,25 @@ USkeletalMeshComponent* ABaseCharacter::GetWeaponMesh()
 void ABaseCharacter::PickupWeapon(ABaseWeapon* TargetWeapon)
 {
 	GetCastedAttackComponent()->AddWeapon(TargetWeapon);
+}
+
+void ABaseCharacter::UpdateCharacterStats(int32 CharacterLevel)
+{
+	UMyGameInstance* CastedGameInstance = Cast<UMyGameInstance>(GetWorld()->GetGameInstance());
+	if (!CastedGameInstance) return;
+	
+	UDataTable* CharacterDataTable = CastedGameInstance->CharacterDataTable;
+	if (CharacterDataTable)
+	{
+		TArray<FInha_CharacterStats*> CharacterStatRows;
+		CharacterDataTable->GetAllRows<FInha_CharacterStats>(TEXT("ABaseCharacter"), CharacterStatRows);
+		
+		if (CharacterStatRows.Num() > 0)
+		{
+			const auto CurrentCharacterLevel = FMath::Clamp(CharacterLevel, 1, CharacterStatRows.Num());
+			CharacterStats = CharacterStatRows[CurrentCharacterLevel - 1];
+			
+			GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->WalkSpeed;
+		}
+	}
 }

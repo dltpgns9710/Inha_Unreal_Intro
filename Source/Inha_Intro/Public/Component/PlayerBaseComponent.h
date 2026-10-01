@@ -7,6 +7,7 @@
 #include "PlayerBaseComponent.generated.h"
 
 
+class ABaseCharacter;
 class UCharacterMovementComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -22,6 +23,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	TObjectPtr<ABaseCharacter> CastedOwnerCharacter;
+	ABaseCharacter* GetCastedCharacter();
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

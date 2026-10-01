@@ -102,12 +102,3 @@ USkeletalMeshComponent* UPlayerAttackComponent::GetWeaponSkeletalMesh()
 	}
 	return Weapons[CurrentWeaponIndex]->GetMesh();
 }
-
-ABaseCharacter* UPlayerAttackComponent::GetCastedCharacter()
-{
-	if (!CastedOwnerCharacter)
-	{
-		CastedOwnerCharacter = Cast<ABaseCharacter>(OwnerCharacter);
-	}
-	return CastedOwnerCharacter;
-}

@@ -22,12 +22,5 @@ public:
 	void Run_Enter(const FInputActionValue& InputActionValue);
 	void Run_Exit(const FInputActionValue& InputActionValue);
 	
-	float GetWalkSpeed() const;
-	float GetRunSpeed() const;
 	float GetMaxWalkSpeed() const;
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float WalkSpeed = 300.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Values")
-	float RunSpeed = 600.f;
 };

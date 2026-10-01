@@ -4,8 +4,10 @@
 #include "Component/PlayerMovementComponent.h"
 
 #include "InputActionValue.h"
+#include "Data/Inha_CharacterStats.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/BaseCharacter.h"
 
 void UPlayerMovementComponent::Look(const FInputActionValue& InputActionValue)
 {
@@ -67,28 +69,22 @@ void UPlayerMovementComponent::Jump(const FInputActionValue& InputActionValue)
 
 void UPlayerMovementComponent::Run_Enter(const FInputActionValue& InputActionValue)
 {
-	if (OwnerMovementComponent == nullptr)
+	if (OwnerMovementComponent == nullptr || 
+		GetCastedCharacter() == nullptr || 
+		GetCastedCharacter()->GetCharacterStats() == nullptr)
 		return;
 	
-	OwnerMovementComponent->MaxWalkSpeed = RunSpeed;
+	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->RunSpeed;
 }
 
 void UPlayerMovementComponent::Run_Exit(const FInputActionValue& InputActionValue)
 {
-	if (OwnerMovementComponent == nullptr)
+	if (OwnerMovementComponent == nullptr || 
+		GetCastedCharacter() == nullptr || 
+		GetCastedCharacter()->GetCharacterStats() == nullptr)
 		return;
 	
-	OwnerMovementComponent->MaxWalkSpeed = WalkSpeed;
-}
-
-float UPlayerMovementComponent::GetWalkSpeed() const
-{
-	return WalkSpeed;
-}
-
-float UPlayerMovementComponent::GetRunSpeed() const
-{
-	return RunSpeed;
+	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->WalkSpeed;
 }
 
 float UPlayerMovementComponent::GetMaxWalkSpeed() const
