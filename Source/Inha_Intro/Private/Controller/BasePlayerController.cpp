@@ -11,6 +11,7 @@
 #include "Data/PlayerInputData.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Interface/Inha_Interactable.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Player/BaseCharacter.h"
 #include "Projectile/BaseBullet.h"
@@ -159,7 +160,8 @@ void ABasePlayerController::Input_ExitRun(const FInputActionValue& InputActionVa
 
 void ABasePlayerController::Input_Interact(const FInputActionValue& InputActionValue)
 {
-	PrintLogWithRole(this, TEXT("F Interact"), FColor::Cyan, 1);
+	Server_Interact(GetCastOwnerCharacter());
+	//PrintLogWithRole(this, TEXT("F Interact"), FColor::Cyan, 1);
 }
 
 void ABasePlayerController::PrintLogWithRole(const AActor* WorldContextObject, FString Text, FLinearColor TextColor,
@@ -257,4 +259,12 @@ UPlayerMovementComponent* ABasePlayerController::GetPlayerMovementComponent()
 		PlayerMovementComponent = Cast<UPlayerMovementComponent>(GetCastOwnerCharacter()->GetPlayerMovementComponent());
 	}
 	return PlayerMovementComponent;
+}
+
+void ABasePlayerController::Server_Interact_Implementation(ABaseCharacter* BaseCharacterInstigator)
+{
+	if (BaseCharacterInstigator && BaseCharacterInstigator->InteractableActor)
+	{
+		IInha_Interactable::Execute_Interact(BaseCharacterInstigator->InteractableActor, BaseCharacterInstigator);
+	}
 }

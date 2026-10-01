@@ -67,4 +67,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	ABaseCharacter* GetCastOwnerCharacter();
 	UPlayerMovementComponent* GetPlayerMovementComponent();
+	
+private:
+	UFUNCTION(Server, Reliable)
+	void Server_Interact(ABaseCharacter* BaseCharacterInstigator);
 };

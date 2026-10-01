@@ -23,4 +23,10 @@ public:
 	void Run_Exit(const FInputActionValue& InputActionValue);
 	
 	float GetMaxWalkSpeed() const;
+
+private:
+	UFUNCTION(Server, Reliable)
+	void Server_RunEnter();
+	UFUNCTION(Server, Reliable)
+	void Server_RunExit();
 };

@@ -26,7 +26,9 @@ class INHA_INTRO_API ABaseCharacter : public ACharacter
 
 public:
 	ABaseCharacter();
-
+	
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AActor> InteractableActor;
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;

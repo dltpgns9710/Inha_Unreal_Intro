@@ -69,22 +69,30 @@ void UPlayerMovementComponent::Jump(const FInputActionValue& InputActionValue)
 
 void UPlayerMovementComponent::Run_Enter(const FInputActionValue& InputActionValue)
 {
-	if (OwnerMovementComponent == nullptr || 
+	Server_RunEnter();
+	if (GetCastedCharacter()->IsLocallyControlled())
+	{
+		if (OwnerMovementComponent == nullptr || 
 		GetCastedCharacter() == nullptr || 
 		GetCastedCharacter()->GetCharacterStats() == nullptr)
-		return;
+			return;
 	
-	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->RunSpeed;
+		OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->RunSpeed;
+	}
 }
 
 void UPlayerMovementComponent::Run_Exit(const FInputActionValue& InputActionValue)
 {
-	if (OwnerMovementComponent == nullptr || 
+	Server_RunExit();
+	if (GetCastedCharacter()->IsLocallyControlled())
+	{
+		if (OwnerMovementComponent == nullptr || 
 		GetCastedCharacter() == nullptr || 
 		GetCastedCharacter()->GetCharacterStats() == nullptr)
-		return;
+			return;
 	
-	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->WalkSpeed;
+		OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->WalkSpeed;
+	}
 }
 
 float UPlayerMovementComponent::GetMaxWalkSpeed() const
@@ -93,4 +101,24 @@ float UPlayerMovementComponent::GetMaxWalkSpeed() const
 		return 0;
 	
 	return OwnerMovementComponent->MaxWalkSpeed;
+}
+
+void UPlayerMovementComponent::Server_RunEnter_Implementation()
+{
+	if (OwnerMovementComponent == nullptr || 
+		GetCastedCharacter() == nullptr || 
+		GetCastedCharacter()->GetCharacterStats() == nullptr)
+		return;
+	
+	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->RunSpeed;
+}
+
+void UPlayerMovementComponent::Server_RunExit_Implementation()
+{
+	if (OwnerMovementComponent == nullptr || 
+		GetCastedCharacter() == nullptr || 
+		GetCastedCharacter()->GetCharacterStats() == nullptr)
+		return;
+	
+	OwnerMovementComponent->MaxWalkSpeed = GetCastedCharacter()->GetCharacterStats()->WalkSpeed;
 }

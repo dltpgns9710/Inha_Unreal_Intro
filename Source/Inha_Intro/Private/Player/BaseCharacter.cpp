@@ -2,12 +2,14 @@
 
 #include "Public/Player/BaseCharacter.h"
 
+#include "InputActionValue.h"
 #include "Camera/CameraComponent.h"
 #include "Component/PlayerAttackComponent.h"
 #include "Component/PlayerMovementComponent.h"
 #include "Data/Inha_CharacterStats.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Interface/Inha_Interactable.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/MyGameInstance.h"
 
@@ -184,6 +186,41 @@ void ABaseCharacter::Tick(float DeltaTime)
 		GetMesh()->SetVisibility(true);
 	}
 	UpdateAimOffset(DeltaTime);
+	
+	if (GetLocalRole() != ROLE_Authority) return;
+	
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = true;
+	QueryParams.AddIgnoredActor(this);
+	
+	auto SphereRadius = 50.f;
+	auto StartLocation = FollowCamera->GetComponentLocation() + FollowCamera->GetForwardVector() * 150.f;
+	auto EndLocation = StartLocation + FollowCamera->GetForwardVector() * 500.f;
+	
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(this);
+	auto IsHit = UKismetSystemLibrary::SphereTraceSingle(
+		GetWorld(),
+		StartLocation,
+		EndLocation,
+		SphereRadius,
+		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		false,
+		IgnoreActors,
+		EDrawDebugTrace::ForOneFrame,
+		HitResult,
+		true);
+	
+	if (IsHit &&
+		HitResult.GetActor()->GetClass()->ImplementsInterface(UInha_Interactable::StaticClass()))
+	{
+		InteractableActor = HitResult.GetActor();
+	}
+	else
+	{
+		InteractableActor = nullptr;
+	}
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -330,7 +367,22 @@ void ABaseCharacter::UpdateCharacterStats(int32 CharacterLevel)
 			const auto CurrentCharacterLevel = FMath::Clamp(CharacterLevel, 1, CharacterStatRows.Num());
 			CharacterStats = CharacterStatRows[CurrentCharacterLevel - 1];
 			
+			bool IsRunning = false;
+			if (GetCharacterMovement() && GetCharacterStats())
+			{
+				if (GetCharacterMovement()->MaxWalkSpeed > GetCharacterStats()->WalkSpeed)
+				{
+					IsRunning = true;
+				}
+			}
 			GetCharacterMovement()->MaxWalkSpeed = GetCharacterStats()->WalkSpeed;
+			if (UPlayerMovementComponent* MoveComponent = Cast<UPlayerMovementComponent>(GetPlayerMovementComponent()))
+			{
+				if (IsRunning)
+				{
+					MoveComponent->Run_Enter(FInputActionValue());
+				}
+			}
 		}
 	}
 }
