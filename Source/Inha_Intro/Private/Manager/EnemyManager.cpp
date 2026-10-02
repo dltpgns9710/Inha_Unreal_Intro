@@ -19,6 +19,9 @@ void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority() == false)
+		return;
+	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), SpawnPointClass, SpawnPoints);
 	
 	float CreateTime = FMath::RandRange(MinTime, MaxTime);
@@ -35,12 +38,25 @@ void AEnemyManager::Tick(float DeltaTime)
 void AEnemyManager::CreateEnemy()
 {
 	if (SpawnPoints.Num() == 0) return;
+	if (SpawnActorCount >= MaxSpawn) return;
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 	int index = FMath::RandRange(0, SpawnPoints.Num() - 1);
-	GetWorld()->SpawnActor<AEnemy>(EnemyFactory, SpawnPoints[index]->GetActorLocation(), FRotator(0));
+	AActor* SpawnActor =GetWorld()->SpawnActor<AActor>(EnemyFactory, SpawnPoints[index]->GetActorLocation(), FRotator(0), SpawnParams);
+	if (SpawnActor)
+	{
+		++SpawnActorCount;
+		SpawnActor->OnDestroyed.AddDynamic(this, &ThisClass::EnemyOnDestroyed);
+	}
 	
 	float CreateTime = FMath::RandRange(MinTime, MaxTime);
-	
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ThisClass::CreateEnemy, CreateTime);
 }
 
+void AEnemyManager::EnemyOnDestroyed(AActor* DestroyedActor)
+{
+	--SpawnActorCount;
+	SpawnActorCount = SpawnActorCount < 0 ? 0 : SpawnActorCount;
+}

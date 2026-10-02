@@ -31,13 +31,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category=SpawnSetting)
 	float MaxTime = 5.f;
 	UPROPERTY(EditAnywhere, Category=SpawnSetting)
+	int MaxSpawn = 5;
+	UPROPERTY(EditAnywhere, Category=SpawnSetting)
 	TSubclassOf<AActor> SpawnPointClass;
 	UPROPERTY(EditAnywhere, Category=SpawnSetting)
-	TSubclassOf<AEnemy> EnemyFactory;
+	TSubclassOf<AActor> EnemyFactory;
 	
 	UPROPERTY()
 	TArray<AActor*> SpawnPoints;
 	FTimerHandle SpawnTimerHandle;
 	
 	void CreateEnemy();
+private:
+	int SpawnActorCount = 0;
+	
+	UFUNCTION()
+	void EnemyOnDestroyed(AActor* DestroyedActor);
 };
